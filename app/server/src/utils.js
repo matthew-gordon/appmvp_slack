@@ -1,5 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import expressJwt from 'express-jwt';
+import { config } from 'dotenv';
+
+config();
 
 export async function hashPass(password) {
   const salt = bcrypt.genSaltSync();
@@ -34,4 +38,30 @@ export function createToken(user) {
     process.env.TOKEN_SECRET,
     { algorithm: 'HS256', expiresIn: '1h' }
   );
+}
+
+export async function ensureAuthenticated(req, res, next) {
+  if (!(req.headers && req.headers.authorization)) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'you are not authorized',
+    });
+  }
+
+  const [bearer, token] = req.headers.authorization.split(' ');
+
+  if (bearer === 'Bearer' && token) {
+    try {
+      const payload = await jwt.verify(token, process.env.TOKEN_SECRET);
+
+      await db('users').where({ id: payload.sub }).first();
+
+      next();
+    } catch (err) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'you are not authorized',
+      });
+    }
+  }
 }

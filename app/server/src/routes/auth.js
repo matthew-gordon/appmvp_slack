@@ -1,5 +1,4 @@
 import express from 'express';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import db from '../db';
 import { comparePass, hashPass, createToken } from '../utils';
@@ -122,10 +121,6 @@ router.post('/auth/register', async (req, res) => {
       message: 'there was a problem creating your account',
     });
   }
-});
-
-router.get('/auth/user', async (req, res) => {
-  res.status(200).json({ status: 'success' });
 });
 
 export default router;
