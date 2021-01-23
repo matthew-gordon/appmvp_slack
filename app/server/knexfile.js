@@ -15,10 +15,10 @@ const options = {
   },
   migrations: {
     tableName: 'knex_migrations',
-    directory: path.join(process.cwd(), 'src', 'db', 'migrations'),
+    directory: path.join(__dirname, 'src', 'db', 'migrations'),
   },
   seeds: {
-    directory: path.join(process.cwd(), 'src', 'db', 'seeds'),
+    directory: path.join(__dirname, 'src', 'db', 'seeds'),
   },
 };
 
@@ -40,8 +40,8 @@ module.exports = {
       database: process.env.DB_NAME,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      port: process.env.DB_PORT,
       host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
     },
   }),
 };

@@ -15,6 +15,7 @@ exports.seed = function (knex) {
             id: 1,
             username: 'new_user',
             email: 'user@email.com',
+            role: 'ADMIN',
             password: hash,
           },
         ])

@@ -1,68 +1,131 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import db from '../db';
-import { comparePass, createToken } from '../utils';
+import { comparePass, hashPass, createToken } from '../utils';
 
 const router = express.Router();
 
 router.post('/auth/login', async (req, res) => {
   try {
-    const user = await db('users').where({ email: req.body.email }).first();
+    const { email, password } = req.body;
+
+    const user = await db('users').where({ email }).first();
 
     if (!user) {
-      throw new Error('invalid credentials');
+      return res.status(403).json({
+        status: 'error',
+        message: 'invalid credentials',
+      });
     }
 
-    await comparePass(req.body.password, user.password);
+    const passwordValid = await comparePass(password, user.password);
 
-    const token = await createToken(user);
+    if (passwordValid) {
+      const { password, bio, ...rest } = user;
+      const userInfo = Object.assign({}, { ...rest });
 
-    res.status(200).send({ status: 'success', user, token });
+      const token = createToken(user);
+
+      const decodedToken = jwt.decode(token);
+      const expiresAt = decodedToken.exp;
+
+      res.json({
+        status: 'success',
+        message: 'User logged in!',
+        token,
+        userInfo,
+        expiresAt,
+      });
+    } else {
+      res.status(403).json({
+        status: 'error',
+        message: 'invalid credentials',
+      });
+    }
   } catch (err) {
-    res.status(500).send({ status: 'error', message: err.message });
+    res.status(400).json({ status: 'error', message: err.message });
   }
 });
 
 router.post('/auth/register', async (req, res) => {
   try {
-    const username = await db('users')
-      .where({ username: req.body.username })
+    const { email, username } = req.body;
+
+    const hashedPassword = hashPass(req.body.password);
+
+    const userData = {
+      email: email.toLowerCase(),
+      username,
+      password: hashedPassword,
+      role: 'user',
+    };
+
+    const usernameExists = await db('users')
+      .where({ username: userData.username })
       .first();
 
-    if (username) {
-      throw new Error('username taken');
+    if (usernameExists) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'username already exists' });
     }
 
-    const email = await db('users').where({ email: req.body.email }).first();
+    const emailExists = await db('users')
+      .where({ email: userData.email })
+      .first();
 
-    if (email) {
-      throw new Error('email taken');
+    if (emailExists) {
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'email already exists' });
     }
-
-    const salt = bcrypt.genSaltSync();
-    const hash = bcrypt.hashSync(req.body.password, salt);
 
     const [user] = await db('users')
       .insert({
-        username: req.body.username,
-        email: req.body.email,
-        password: hash,
+        username,
+        email,
+        password: hashedPassword,
       })
-      .returning(['id', 'username', 'email', 'created_at', 'updated_at']);
+      .returning('*');
 
-    const token = await createToken(user);
+    if (user) {
+      const token = createToken(user);
+      const decodedToken = jwt.decode(token);
+      const expiresAt = decodedToken.exp;
 
-    res.status(200).send({
-      status: 'success',
-      token,
-      user,
-    });
+      const { id, email, username, role } = user;
+
+      const userInfo = {
+        id,
+        email,
+        username,
+        role,
+      };
+
+      return res.json({
+        status: 'success',
+        message: 'User created!',
+        token,
+        userInfo,
+        expiresAt,
+      });
+    } else {
+      return res.status(400).json({
+        status: 'error',
+        message: 'there was a problem creating your account',
+      });
+    }
   } catch (err) {
-    res.status(500).send({
+    return res.status(400).json({
       status: 'error',
-      message: err.message,
+      message: 'there was a problem creating your account',
     });
   }
+});
+
+router.get('/auth/user', async (req, res) => {
+  res.status(200).json({ status: 'success' });
 });
 
 export default router;

@@ -1,6 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import dayjs from 'dayjs';
+
+export async function hashPass(password) {
+  const salt = bcrypt.genSaltSync();
+  const hash = bcrypt.hashSync(password, salt);
+
+  return hash;
+}
 
 export async function comparePass(userPassword, dbPassword) {
   const valid = await bcrypt.compareSync(userPassword, dbPassword);
@@ -12,18 +18,20 @@ export async function comparePass(userPassword, dbPassword) {
   }
 }
 
-export async function createToken(user) {
-  const tokenSecret = process.env.TOKEN_SECRET || 'changeme';
+export function createToken(user) {
+  if (!user.role) {
+    throw new Error('No user role specified');
+  }
 
-  return {
-    token: jwt.sign(
-      {
-        exp: dayjs().add(15, 'day').unix(),
-        iat: dayjs().unix(),
-        sub: user.id,
-      },
-      tokenSecret,
-      {}
-    ),
-  };
+  return jwt.sign(
+    {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      iss: 'api.slack',
+      aud: 'api.slack',
+    },
+    process.env.TOKEN_SECRET,
+    { algorithm: 'HS256', expiresIn: '1h' }
+  );
 }

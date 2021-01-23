@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import { app } from '../../app';
-import db from '../../db';
+import { app } from '../../src/app';
+import db from '../../src/db';
 
 const request = supertest(app);
 
@@ -22,7 +22,7 @@ describe('routes : auth', () => {
         password: 'password123',
       });
 
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(403);
       expect(res.type).toBe('application/json');
       expect(res.body.status).toBe('error');
       expect(res.body.message).toBe('invalid credentials');
@@ -34,7 +34,7 @@ describe('routes : auth', () => {
         password: 'invalid',
       });
 
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(400);
       expect(res.type).toBe('application/json');
       expect(res.body.status).toBe('error');
       expect(res.body.message).toBe('invalid credentials');
@@ -49,43 +49,42 @@ describe('routes : auth', () => {
       expect(res.status).toBe(200);
       expect(res.type).toBe('application/json');
       expect(res.body.status).toBe('success');
-      expect(res.body).toHaveProperty('token');
-      expect(res.body).toHaveProperty('user');
-      expect(res.body.user).toHaveProperty('id');
-      expect(res.body.user.id).toBe(1);
-      expect(res.body.user).toHaveProperty('username');
-      expect(res.body.user.username).toBe('new_user');
-      expect(res.body.user).toHaveProperty('email');
-      expect(res.body.user.email).toBe('user@email.com');
-      expect(res.body.user).toHaveProperty('password');
+      expect(res.body).toHaveProperty('expiresAt');
+      expect(res.body).toHaveProperty('userInfo');
+      expect(res.body.userInfo).toHaveProperty('id');
+      expect(res.body.userInfo.id).toBe(1);
+      expect(res.body.userInfo).toHaveProperty('username');
+      expect(res.body.userInfo.username).toBe('new_user');
+      expect(res.body.userInfo).toHaveProperty('email');
+      expect(res.body.userInfo.email).toBe('user@email.com');
     });
   });
 
   describe('POST /auth/register', () => {
-    it('throws an error if username taken', async () => {
+    it('throws an error if username exists', async () => {
       const res = await request.post('/auth/register').send({
         email: 'new@email.com',
         username: 'new_user',
         password: 'password123',
       });
 
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(400);
       expect(res.type).toBe('application/json');
       expect(res.body.status).toBe('error');
-      expect(res.body.message).toBe('username taken');
+      expect(res.body.message).toBe('username already exists');
     });
 
-    it('throws an error if email taken', async () => {
+    it('throws an error if email exists', async () => {
       const res = await request.post('/auth/register').send({
         email: 'user@email.com',
         username: 'new_user',
         password: 'password123',
       });
 
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(400);
       expect(res.type).toBe('application/json');
       expect(res.body.status).toBe('error');
-      expect(res.body.message).toBe('username taken');
+      expect(res.body.message).toBe('username already exists');
     });
 
     it('returns a valid user with token', async () => {
@@ -94,6 +93,26 @@ describe('routes : auth', () => {
         username: 'gordo_mateo',
         password: 'password123',
       });
+
+      expect(res.status).toBe(200);
+      expect(res.type).toBe('application/json');
+      expect(res.body.status).toBe('success');
+      expect(res.body).toHaveProperty('token');
+      expect(res.body).toHaveProperty('userInfo');
+      expect(res.body.userInfo).toHaveProperty('id');
+      expect(res.body.userInfo.id).toBe(2);
+      expect(res.body.userInfo).toHaveProperty('username');
+      expect(res.body.userInfo.username).toBe('gordo_mateo');
+      expect(res.body.userInfo).toHaveProperty('email');
+      expect(res.body.userInfo.email).toBe('new@email.com');
+    });
+  });
+
+  xdescribe('GET /auth/me', () => {
+    it('returns user info with valid token', async () => {
+      const res = await request
+        .get('/auth/user')
+        .set('Authorization', 'Bearer look');
 
       expect(res.status).toBe(200);
       expect(res.type).toBe('application/json');

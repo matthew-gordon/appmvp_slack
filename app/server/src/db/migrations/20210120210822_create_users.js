@@ -4,6 +4,7 @@ exports.up = function (knex) {
     table.text('username').unique().notNullable();
     table.text('email').unique().notNullable();
     table.text('password').notNullable();
+    table.enum('role', ['ADMIN', 'USER']).defaultTo('USER');
     table.timestamps(true, true);
   });
 };
