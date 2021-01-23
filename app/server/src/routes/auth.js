@@ -1,7 +1,12 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import db from '../db';
-import { comparePass, hashPass, createToken } from '../utils';
+import {
+  comparePass,
+  hashPass,
+  createToken,
+  ensureAuthenticated,
+} from '../utils';
 
 const router = express.Router();
 
@@ -120,6 +125,16 @@ router.post('/auth/register', async (req, res) => {
       status: 'error',
       message: 'there was a problem creating your account',
     });
+  }
+});
+
+router.get('/auth/user', ensureAuthenticated, async (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'success',
+    });
+  } catch (err) {
+    console.log(err);
   }
 });
 

@@ -108,23 +108,20 @@ describe('routes : auth', () => {
     });
   });
 
-  xdescribe('GET /auth/me', () => {
+  describe('GET /auth/user', () => {
     it('returns user info with valid token', async () => {
+      const loginResponse = await request.post('/auth/login').send({
+        email: 'user@email.com',
+        password: 'password123',
+      });
+
       const res = await request
         .get('/auth/user')
-        .set('Authorization', 'Bearer look');
+        .set('Authorization', `Bearer ${loginResponse.body.token}`);
 
       expect(res.status).toBe(200);
       expect(res.type).toBe('application/json');
       expect(res.body.status).toBe('success');
-      expect(res.body).toHaveProperty('token');
-      expect(res.body).toHaveProperty('user');
-      expect(res.body.user).toHaveProperty('id');
-      expect(res.body.user.id).toBe(2);
-      expect(res.body.user).toHaveProperty('username');
-      expect(res.body.user.username).toBe('gordo_mateo');
-      expect(res.body.user).toHaveProperty('email');
-      expect(res.body.user.email).toBe('new@email.com');
     });
   });
 });

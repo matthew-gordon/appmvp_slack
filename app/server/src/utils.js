@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import expressJwt from 'express-jwt';
 import { config } from 'dotenv';
+import db from './db';
 
 config();
 
@@ -54,7 +54,9 @@ export async function ensureAuthenticated(req, res, next) {
     try {
       const payload = await jwt.verify(token, process.env.TOKEN_SECRET);
 
-      await db('users').where({ id: payload.sub }).first();
+      await db('users')
+        .where({ id: parseInt(payload.sub) })
+        .first();
 
       next();
     } catch (err) {
