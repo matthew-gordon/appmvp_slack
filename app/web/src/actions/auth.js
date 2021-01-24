@@ -25,7 +25,7 @@ export const loginUser = ({ email, password }, success) => {
       localStorage.setItem('expiresAt', responseBody.expiresAt);
 
       dispatch(authSuccess(responseBody));
-      success(true);
+      success(true, { user: responseBody.userInfo });
     } catch (err) {
       dispatch(authError(err.message));
       success(false);

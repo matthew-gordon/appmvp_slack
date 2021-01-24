@@ -1,30 +1,32 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { connect, useSelector } from 'react-redux';
 import { loginUser } from '../actions/auth';
 
-const LoginPage = ({ loginUser }) => {
-  const history = useHistory();
-  const auth = useSelector((state) => state.auth);
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    loginUser({ email, password }, (success) => {
-      if (success) {
-        history.push('/workspaces');
+    loginUser({ email, password }, (success, { user }) => {
+      if (success && !!user) {
+        history.push(`/client/${user.id}/workspaces`);
       }
     });
   };
 
   return (
-    <div>
-      {auth.error && <span>{auth.error}</span>}
-      <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
+      <div>
         <div>
           <label>Email</label>
+        </div>
+        <div>
           <input
             type="text"
             placeholder="email"
@@ -32,8 +34,12 @@ const LoginPage = ({ loginUser }) => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+      </div>
+      <div>
         <div>
           <label>Password</label>
+        </div>
+        <div>
           <input
             type="password"
             placeholder="password"
@@ -41,11 +47,36 @@ const LoginPage = ({ loginUser }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+      </div>
 
-        <button type="submit">Login</button>
-      </form>
-    </div>
+      <button type="submit">Login</button>
+    </form>
+  );
+};
+
+const LoginPage = ({ loginUser }) => {
+  const auth = useSelector((state) => state.auth);
+
+  return (
+    <Container>
+      <FormContainer>
+        {auth.error && <span>{auth.error}</span>}
+        <LoginForm loginUser={loginUser} />
+      </FormContainer>
+    </Container>
   );
 };
 
 export default connect(null, { loginUser })(LoginPage);
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+`;
+
+const FormContainer = styled.div`
+  padding: 12px;
+`;

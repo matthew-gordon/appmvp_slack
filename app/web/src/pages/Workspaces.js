@@ -27,7 +27,9 @@ const WorkspacesPage = () => {
             },
           ].map((workspace, idx) => (
             <div key={idx}>
-              <Link to={`/workspaces/${workspace.id}`}>
+              <Link
+                to={`/client/${auth.userInfo.id}/workspaces/${workspace.id}`}
+              >
                 <WorkspaceListItem>{workspace.name}</WorkspaceListItem>
                 <Hr />
               </Link>
