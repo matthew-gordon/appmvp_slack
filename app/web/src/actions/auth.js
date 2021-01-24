@@ -25,10 +25,45 @@ export const loginUser = ({ email, password }, success) => {
       localStorage.setItem('expiresAt', responseBody.expiresAt);
 
       dispatch(authSuccess(responseBody));
+
       success(true, { user: responseBody.userInfo });
     } catch (err) {
       dispatch(authError(err.message));
-      success(false);
+      success(false, { user: null });
+    }
+  };
+};
+
+export const registerUser = ({ email, password, username }, success) => {
+  return async (dispatch) => {
+    try {
+      const res = await fetch('http://localhost:3000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          username,
+        }),
+      });
+
+      const responseBody = await res.json();
+
+      if (!res.ok) {
+        throw new Error(responseBody.message);
+      }
+
+      localStorage.setItem('token', responseBody.token);
+      localStorage.setItem('userInfo', JSON.stringify(responseBody.userInfo));
+      localStorage.setItem('expiresAt', responseBody.expiresAt);
+
+      dispatch(authSuccess(responseBody));
+      success(true, { user: responseBody.userInfo });
+    } catch (err) {
+      dispatch(authError(err.message));
+      success(false, { user: null });
     }
   };
 };
