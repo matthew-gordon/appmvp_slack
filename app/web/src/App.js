@@ -1,10 +1,13 @@
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Team from './pages/Team';
+import Workspace from './pages/Workspace';
+import Workspaces from './pages/Workspaces';
 import Login from './pages/Login';
-import SignUp from './pages/SignUp';
+import Register from './pages/Register';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
+import AuthenticatedRoute from './components/AuthenticatedRoute';
+import { AuthProvider } from './context/AuthContext';
 
 const Loading = () => {
   return <h1>Loading...</h1>;
@@ -16,8 +19,8 @@ const UnAuthenticatedRoutes = () => {
       <Route path="/login">
         <Login />
       </Route>
-      <Route path="/signup">
-        <SignUp />
+      <Route path="/register">
+        <Register />
       </Route>
       <Route exact path="/">
         <Home />
@@ -29,25 +32,22 @@ const UnAuthenticatedRoutes = () => {
   );
 };
 
-const AppRoutes = () => {
-  return (
-    <>
-      <Suspense fallback={<Loading />}>
-        <Switch>
-          <Route path="/team/:id">
-            <Team />
-          </Route>
-          <UnAuthenticatedRoutes />
-        </Switch>
-      </Suspense>
-    </>
-  );
-};
-
 function App() {
   return (
     <Router>
-      <AppRoutes />
+      <AuthProvider>
+        <Suspense fallback={<Loading />}>
+          <Switch>
+            <AuthenticatedRoute path="/workspaces/:id">
+              <Workspace />
+            </AuthenticatedRoute>
+            <Route path="/workspaces">
+              <Workspaces />
+            </Route>
+            <UnAuthenticatedRoutes />
+          </Switch>
+        </Suspense>
+      </AuthProvider>
     </Router>
   );
 }

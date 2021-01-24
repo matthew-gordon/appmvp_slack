@@ -1,9 +1,22 @@
+import React from 'react';
 import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
 
-const TeamShell = () => {
+const Workspace = () => {
   return (
     <Container>
-      <Teams>Teams</Teams>
+      <Workspaces>
+        <WorkspaceList>
+          {[
+            { id: 1, name: 'a' },
+            { id: 2, name: 'b' },
+          ].map((team, idx) => (
+            <WorkspaceLink key={idx} activeClassName="active" to={`${team.id}`}>
+              {team.name.toUpperCase()}
+            </WorkspaceLink>
+          ))}
+        </WorkspaceList>
+      </Workspaces>
       <Channels>Channels</Channels>
       <Header>Header</Header>
       <Messages>
@@ -15,17 +28,14 @@ const TeamShell = () => {
           )}
         </MessageList>
       </Messages>
-      <Input>
-        <StyledInput
-          type="text"
-          placeholder="Have you tried the CSS Grid Layout Module?"
-        />
-      </Input>
+      <InputContainer>
+        <Input type="text" placeholder="message #team" />
+      </InputContainer>
     </Container>
   );
 };
 
-export default TeamShell;
+export default Workspace;
 
 const Container = styled.div`
   display: grid;
@@ -34,13 +44,48 @@ const Container = styled.div`
   grid-template-rows: auto 1fr auto;
 `;
 
-const Teams = styled.div`
+const Workspaces = styled.div`
   background-color: #362233;
   grid-column: 1;
   grid-row: 1 / 4;
   color: #fff;
   padding: 1em;
   text-align: center;
+`;
+
+const WorkspaceList = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+`;
+
+const WorkspaceLink = styled(NavLink)`
+  height: 50px;
+  width: 50px;
+  background-color: #676066;
+  color: #fff;
+  margin: auto;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: border-width ease-in 0.1s;
+  text-decoration: none;
+
+  &:hover {
+    border-style: solid;
+    border-width: thick;
+    border-color: #767676;
+  }
+
+  &.active {
+    border-style: solid;
+    border-width: thick;
+    border-color: #fff;
+  }
 `;
 
 const Channels = styled.div`
@@ -62,7 +107,7 @@ const Header = styled.div`
   text-align: center;
 `;
 
-const Input = styled.div`
+const InputContainer = styled.div`
   background-color: #fff;
   grid-column: 3;
   grid-row: 3;
@@ -71,7 +116,7 @@ const Input = styled.div`
   text-align: center;
 `;
 
-const StyledInput = styled.input`
+const Input = styled.input`
   width: 100%;
   padding: 1em;
   outline: none;
