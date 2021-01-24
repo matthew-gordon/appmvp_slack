@@ -1,18 +1,14 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
 
 const AuthenticatedRoute = ({ children, ...rest }) => {
-  const auth = useContext(AuthContext);
-
-  console.log(auth);
+  const auth = useSelector((state) => state.auth);
 
   return (
     <Route
       {...rest}
-      render={() =>
-        auth.isAuthenticated() ? children : <Redirect to="/login" />
-      }
+      render={() => (auth.isLoggedIn ? children : <Redirect to="/login" />)}
     />
   );
 };

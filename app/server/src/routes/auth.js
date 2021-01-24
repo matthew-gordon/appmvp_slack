@@ -128,14 +128,4 @@ router.post('/auth/register', async (req, res) => {
   }
 });
 
-router.get('/auth/user', ensureAuthenticated, async (req, res) => {
-  try {
-    res.status(200).json({
-      status: 'success',
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 export default router;

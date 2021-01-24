@@ -1,5 +1,6 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Workspace from './pages/Workspace';
 import Workspaces from './pages/Workspaces';
 import Login from './pages/Login';
@@ -7,7 +8,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
-import { AuthProvider } from './context/AuthContext';
+import { authSuccess } from './actions/auth';
 
 const Loading = () => {
   return <h1>Loading...</h1>;
@@ -35,19 +36,17 @@ const UnAuthenticatedRoutes = () => {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <Suspense fallback={<Loading />}>
-          <Switch>
-            <AuthenticatedRoute path="/workspaces/:id">
-              <Workspace />
-            </AuthenticatedRoute>
-            <Route path="/workspaces">
-              <Workspaces />
-            </Route>
-            <UnAuthenticatedRoutes />
-          </Switch>
-        </Suspense>
-      </AuthProvider>
+      <Suspense fallback={<Loading />}>
+        <Switch>
+          <AuthenticatedRoute path="/workspaces/:id">
+            <Workspace />
+          </AuthenticatedRoute>
+          <AuthenticatedRoute path="/workspaces">
+            <Workspaces />
+          </AuthenticatedRoute>
+          <UnAuthenticatedRoutes />
+        </Switch>
+      </Suspense>
     </Router>
   );
 }

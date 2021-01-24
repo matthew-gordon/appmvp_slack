@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const WorkspacesPage = () => {
+  const auth = useSelector((state) => state.auth);
+
   return (
     <Container>
       <Header>
@@ -9,21 +13,25 @@ const WorkspacesPage = () => {
       </Header>
       <Main>
         <Card>
-          <Subtitle>Workspaces for current user</Subtitle>
+          <Subtitle>Workspaces for {auth.userInfo.email}</Subtitle>
           {[
             {
+              id: 1,
               name: 'workspace 1',
-              members: [{ name: 'matt' }, { name: 'brian' }],
+              members: [{ id: 1, name: 'matt' }, { name: 'brian' }],
             },
             {
+              id: 2,
               name: 'workspace 2',
-              members: [{ name: 'matt' }, { name: 'brian' }],
+              members: [{ id: 2, name: 'matt' }, { name: 'brian' }],
             },
-          ].map((workspace) => (
-            <>
-              <WorkspaceListItem>{workspace.name}</WorkspaceListItem>
-              <Hr />
-            </>
+          ].map((workspace, idx) => (
+            <div key={idx}>
+              <Link to={`/workspaces/${workspace.id}`}>
+                <WorkspaceListItem>{workspace.name}</WorkspaceListItem>
+                <Hr />
+              </Link>
+            </div>
           ))}
         </Card>
       </Main>
