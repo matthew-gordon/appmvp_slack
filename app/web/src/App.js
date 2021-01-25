@@ -1,6 +1,5 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import Workspace from './pages/Workspace';
 import Workspaces from './pages/Workspaces';
 import Login from './pages/Login';
@@ -8,7 +7,6 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
-import { authSuccess } from './actions/auth';
 
 const Loading = () => {
   return <h1>Loading...</h1>;
