@@ -107,21 +107,4 @@ describe('routes : auth', () => {
       expect(res.body.userInfo.email).toBe('new@email.com');
     });
   });
-
-  describe('GET /auth/user', () => {
-    it('returns user info with valid token', async () => {
-      const loginResponse = await request.post('/auth/login').send({
-        email: 'user@email.com',
-        password: 'password123',
-      });
-
-      const res = await request
-        .get('/auth/user')
-        .set('Authorization', `Bearer ${loginResponse.body.token}`);
-
-      expect(res.status).toBe(200);
-      expect(res.type).toBe('application/json');
-      expect(res.body.status).toBe('success');
-    });
-  });
 });

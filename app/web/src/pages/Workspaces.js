@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import { connect, useSelector, useDispatch } from 'react-redux';
+import { getWorkspaces } from '../actions/workspaces';
 
 const WorkspacesPage = () => {
+  const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
+  const app = useSelector((state) => state.app);
+  const { userId } = useParams();
+
+  useEffect(() => {
+    dispatch(getWorkspaces({ id: userId }));
+  }, [dispatch, userId]);
 
   return (
     <Container>
@@ -14,19 +22,8 @@ const WorkspacesPage = () => {
       <Main>
         <Card>
           <Subtitle>Workspaces for {auth.userInfo.email}</Subtitle>
-          {[
-            {
-              id: 1,
-              name: 'workspace 1',
-              members: [{ id: 1, name: 'matt' }, { name: 'brian' }],
-            },
-            {
-              id: 2,
-              name: 'workspace 2',
-              members: [{ id: 2, name: 'matt' }, { name: 'brian' }],
-            },
-          ].map((workspace, idx) => (
-            <div key={idx}>
+          {app.workspaces.map((workspace) => (
+            <div key={`workspace-${workspace.id}`}>
               <Link
                 to={`/client/${auth.userInfo.id}/workspaces/${workspace.id}`}
               >
@@ -48,7 +45,7 @@ const WorkspacesPage = () => {
   );
 };
 
-export default WorkspacesPage;
+export default connect(null, { getWorkspaces })(WorkspacesPage);
 
 const Container = styled.div`
   display: flex;

@@ -1,12 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { comparePass, hashPass, createToken } from '../utils';
 import db from '../db';
-import {
-  comparePass,
-  hashPass,
-  createToken,
-  ensureAuthenticated,
-} from '../utils';
 
 const router = express.Router();
 
@@ -33,6 +28,8 @@ router.post('/auth/login', async (req, res) => {
 
       const decodedToken = jwt.decode(token);
       const expiresAt = decodedToken.exp;
+
+      res.cookie('token', token);
 
       res.json({
         status: 'success',
@@ -107,7 +104,9 @@ router.post('/auth/register', async (req, res) => {
         role,
       };
 
-      return res.json({
+      res.cookie('token', token);
+
+      res.json({
         status: 'success',
         message: 'User created!',
         token,
@@ -115,13 +114,13 @@ router.post('/auth/register', async (req, res) => {
         expiresAt,
       });
     } else {
-      return res.status(400).json({
+      res.status(400).json({
         status: 'error',
         message: 'there was a problem creating your account',
       });
     }
   } catch (err) {
-    return res.status(400).json({
+    res.status(400).json({
       status: 'error',
       message: 'there was a problem creating your account',
     });
