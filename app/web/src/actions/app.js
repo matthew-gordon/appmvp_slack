@@ -1,4 +1,4 @@
-import { GET_WORKSPACES, GET_WORKSPACES_ERROR } from '../constants/types';
+import { GET_WORKSPACES, WORKSPACES_ERROR } from '../constants/types';
 
 export const getWorkspaces = ({ id }) => {
   return async (dispatch) => {
@@ -28,7 +28,7 @@ export function workspacesSuccess(payload) {
 
 export function workspacesFailure(payload) {
   return {
-    type: GET_WORKSPACES_ERROR,
+    type: WORKSPACES_ERROR,
     payload,
   };
 }

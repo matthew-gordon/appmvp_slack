@@ -1,4 +1,4 @@
-import { GET_WORKSPACES } from '../constants/types';
+import { GET_WORKSPACES, WORKSPACES_UNLOADED } from '../constants/types';
 
 const initalState = {
   workspaces: [],
@@ -11,6 +11,8 @@ const appReducer = (state = initalState, action) => {
         ...state,
         workspaces: action.payload,
       };
+    case WORKSPACES_UNLOADED:
+      return {};
     default:
       return state;
   }

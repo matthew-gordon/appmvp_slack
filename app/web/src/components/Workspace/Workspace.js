@@ -1,8 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import socketIOClient from 'socket.io-client';
+import { getWorkspaceData } from '../../actions/workspace';
+import { WORKSPACE_UNLOADED } from '../../constants/types';
+
+const NEW_WORKSPACE_MESSAGE = 'NEW_WORKSPACE_MESSAGE';
+const SOCKET_SERVER = 'http://localhost:3000';
 
 const Workspace = () => {
+  const socketRef = useRef();
+  const dispatch = useDispatch();
+  const [message, setMessage] = useState('');
+  const { userId, workspaceId } = useParams();
+  const workspace = useSelector(({ workspace }) => workspace);
+
+  useEffect(() => {
+    dispatch(getWorkspaceData({ workspaceId }));
+
+    socketRef.current = socketIOClient(SOCKET_SERVER, {
+      query: { workspaceId },
+    });
+
+    socketRef.current.on(NEW_WORKSPACE_MESSAGE, (message) => {
+      // setMessages([...messages, { content: message.content }]);
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+      dispatch({ type: WORKSPACE_UNLOADED });
+      // setMessages([]);
+    };
+  }, [workspaceId, workspace.messages]);
+
+  console.log(workspace);
+
+  const sendMessage = (content) => {
+    socketRef.current.emit(NEW_WORKSPACE_MESSAGE, {
+      senderId: socketRef.current.id,
+      userId,
+      content,
+    });
+  };
+
   return (
     <Container>
       <Workspaces>
@@ -21,15 +62,24 @@ const Workspace = () => {
       <Header>Header</Header>
       <Messages>
         <MessageList>
-          {[{ content: 'message 1' }, { content: 'message 2' }].map(
-            (message, idx) => (
-              <MessageListItem key={idx}>{message.content}</MessageListItem>
-            )
-          )}
+          {[{ content: 'moo' }].map((message, idx) => (
+            <MessageListItem key={idx}>{message.content}</MessageListItem>
+          ))}
         </MessageList>
       </Messages>
       <InputContainer>
-        <Input type="text" placeholder="message #team" />
+        <Input
+          type="text"
+          placeholder="message #team"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key.toLowerCase() === 'enter') {
+              sendMessage(message);
+              setMessage('');
+            }
+          }}
+        />
       </InputContainer>
     </Container>
   );
@@ -135,6 +185,8 @@ const Messages = styled.div`
 `;
 
 const MessageList = styled.ul`
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
 `;

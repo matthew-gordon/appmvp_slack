@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import cors from 'cors';
 import { json, urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser';
+import { createSocketServer } from './socketServer';
 import authRoutes from './routes/auth';
 import workspacesRoutes from './routes/workspaces';
 
@@ -17,10 +18,14 @@ app.use(cookieParser());
 app.use(authRoutes);
 app.use(workspacesRoutes);
 
+let server;
+
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(3000, async () => {
+  server = app.listen(3000, async () => {
     console.log('listening on port 3000...');
   });
+
+  createSocketServer({ server });
 }
 
 export { app };

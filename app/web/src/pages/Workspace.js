@@ -2,7 +2,7 @@ import React from 'react';
 import Workspace from '../components/Workspace/Workspace';
 
 const WorkspacePage = () => {
-  return <Workspace>hello</Workspace>;
+  return <Workspace />;
 };
 
 export default WorkspacePage;

@@ -36,7 +36,7 @@ function App() {
     <Router>
       <Suspense fallback={<Loading />}>
         <Switch>
-          <AuthenticatedRoute path="/client/:userId/workspaces/:id">
+          <AuthenticatedRoute path="/client/:userId/workspaces/:workspaceId">
             <Workspace />
           </AuthenticatedRoute>
           <AuthenticatedRoute path="/client/:userId/workspaces">

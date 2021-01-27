@@ -1,17 +1,22 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Link, useParams } from 'react-router-dom';
-import { connect, useSelector, useDispatch } from 'react-redux';
-import { getWorkspaces } from '../actions/workspaces';
+import { useSelector, useDispatch } from 'react-redux';
+import { getWorkspaces } from '../actions/app';
+import { WORKSPACES_UNLOADED } from '../constants/types';
 
 const WorkspacesPage = () => {
   const dispatch = useDispatch();
-  const auth = useSelector((state) => state.auth);
-  const app = useSelector((state) => state.app);
+  const auth = useSelector(({ auth }) => auth);
+  const app = useSelector(({ app }) => app);
   const { userId } = useParams();
 
   useEffect(() => {
     dispatch(getWorkspaces({ id: userId }));
+
+    return () => {
+      dispatch({ type: WORKSPACES_UNLOADED });
+    };
   }, [dispatch, userId]);
 
   return (
@@ -45,7 +50,7 @@ const WorkspacesPage = () => {
   );
 };
 
-export default connect(null, { getWorkspaces })(WorkspacesPage);
+export default WorkspacesPage;
 
 const Container = styled.div`
   display: flex;

@@ -24,12 +24,11 @@ export const loginUser = ({ email, password }, success) => {
       localStorage.setItem('userInfo', JSON.stringify(responseBody.userInfo));
       localStorage.setItem('expiresAt', responseBody.expiresAt);
 
-      dispatch(authSuccess(responseBody));
-
       success(true, { user: responseBody.userInfo });
+      dispatch(authSuccess(responseBody));
     } catch (err) {
-      dispatch(authError(err.message));
       success(false, { user: null });
+      dispatch(authError(err.message));
     }
   };
 };
