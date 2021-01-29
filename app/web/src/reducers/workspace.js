@@ -11,6 +11,7 @@ const workspaceReducer = (state = initalState, action) => {
     case GET_WORKSPACE_DATA:
       return {
         ...state,
+        name: action.payload.name,
         channels: action.payload.channels,
         directMessages: action.payload.directMessages,
       };

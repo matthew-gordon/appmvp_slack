@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { createSocketServer } from './socketServer';
 import authRoutes from './routes/auth';
 import workspacesRoutes from './routes/workspaces';
+import user from './middleware/user';
 
 config();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(urlencoded({ extended: false }));
 app.use(json());
 app.use(cookieParser());
+app.use(user);
 app.use(authRoutes);
 app.use(workspacesRoutes);
 

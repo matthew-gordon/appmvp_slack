@@ -9,7 +9,7 @@ const LoginPage = ({ loginUser }) => {
   const auth = useSelector((state) => state.auth);
 
   if (auth.isLoggedIn) {
-    return <Redirect to={`/client/${auth.userInfo.id}/workspaces`} />;
+    return <Redirect to={`/get-started`} />;
   }
 
   return (

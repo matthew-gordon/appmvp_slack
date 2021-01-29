@@ -1,4 +1,4 @@
-import { GET_WORKSPACE_DATA } from '../constants/types';
+import { GET_WORKSPACE_DATA, WORKSPACES_ERROR } from '../constants/types';
 
 export const getWorkspaceData = ({ workspaceId }) => {
   return async (dispatch) => {
@@ -9,11 +9,14 @@ export const getWorkspaceData = ({ workspaceId }) => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
 
       const responseBody = await res.json();
+
+      console.log(responseBody);
 
       dispatch(workspaceDataSuccess(responseBody));
     } catch (err) {

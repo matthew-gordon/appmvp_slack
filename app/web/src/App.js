@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Workspace from './pages/Workspace';
-import Workspaces from './pages/Workspaces';
+import GetStarted from './pages/GetStarted';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -36,12 +36,14 @@ function App() {
     <Router>
       <Suspense fallback={<Loading />}>
         <Switch>
-          <AuthenticatedRoute path="/client/:userId/workspaces/:workspaceId">
+          <AuthenticatedRoute path="/get-started">
+            <GetStarted />
+          </AuthenticatedRoute>
+
+          <AuthenticatedRoute path="/workspaces/:workspaceId">
             <Workspace />
           </AuthenticatedRoute>
-          <AuthenticatedRoute path="/client/:userId/workspaces">
-            <Workspaces />
-          </AuthenticatedRoute>
+
           <UnAuthenticatedRoutes />
         </Switch>
       </Suspense>

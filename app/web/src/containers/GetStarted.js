@@ -1,23 +1,25 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getWorkspaces } from '../actions/app';
-import { WORKSPACES_UNLOADED } from '../constants/types';
 
 const WorkspacesPage = () => {
+  const auth = useSelector((state) => state.auth);
+  const app = useSelector((state) => state.app);
   const dispatch = useDispatch();
-  const auth = useSelector(({ auth }) => auth);
-  const app = useSelector(({ app }) => app);
-  const { userId } = useParams();
 
   useEffect(() => {
-    dispatch(getWorkspaces({ id: userId }));
-
-    return () => {
-      dispatch({ type: WORKSPACES_UNLOADED });
+    const loadWorkspaces = () => {
+      try {
+        dispatch(getWorkspaces({ id: auth.userInfo.id }));
+      } catch (err) {
+        console.log(err);
+      }
     };
-  }, [dispatch, userId]);
+
+    loadWorkspaces();
+  }, [auth.userInfo]);
 
   return (
     <Container>
@@ -29,9 +31,7 @@ const WorkspacesPage = () => {
           <Subtitle>Workspaces for {auth.userInfo.email}</Subtitle>
           {app.workspaces.map((workspace) => (
             <div key={`workspace-${workspace.id}`}>
-              <Link
-                to={`/client/${auth.userInfo.id}/workspaces/${workspace.id}`}
-              >
+              <Link to={`/workspaces/${workspace.id}`}>
                 <WorkspaceListItem>{workspace.name}</WorkspaceListItem>
                 <Hr />
               </Link>

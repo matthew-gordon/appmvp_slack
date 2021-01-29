@@ -23,27 +23,30 @@ router.get('/client/:userId/workspaces', async (req, res) => {
 
 router.get('/workspaces/:workspaceId/data', async (req, res) => {
   try {
-    const channels = await db('channels')
-      .where({ workspaceId: req.params.workspaceId })
-      .select();
+    const { workspaceId } = req.params;
 
-    console.log(channels);
+    const workspace = await db('workspaces').where({ id: workspaceId }).first();
 
-    // const directMessages = await db('users')
-    //   .distinctOn('users.id', 'users.username')
-    //   .leftJoin('direct_messages', (builder) =>
-    //     builder
-    //       .on({ 'users.id': 'direct_messages.senderId' })
-    //       .orOn({ 'users.id': 'direct_messages.recipientId' })
-    //   )
-    //   .where({ workspaceId })
-    //   .select('users.id', 'users.username')
-    //   .orderBy('users.username', 'DESC');
+    const channels = await db('channels').where({ workspaceId }).select();
+
+    const directMessages = await db('users')
+      .distinctOn('users.id', 'users.username')
+      .leftJoin('direct_messages', (builder) =>
+        builder
+          .on({ 'users.id': 'direct_messages.senderId' })
+          .orOn({ 'users.id': 'direct_messages.recipientId' })
+      )
+      .where({ workspaceId })
+      .select('users.id', 'users.username')
+      .orderBy('users.username', 'DESC');
 
     res.status(200).json({
       status: 'success',
+      name: workspace.name,
       channels,
-      // directMessages: directMessages.filter((member) => member.id !== user.id),
+      directMessages: Array.isArray(directMessages)
+        ? directMessages.filter((member) => member.id !== res.locals.user.id)
+        : [],
     });
   } catch (err) {
     res.status(500).json({
