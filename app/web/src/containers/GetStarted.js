@@ -4,6 +4,21 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getWorkspaces } from '../actions/app';
 
+const WorkspaceItem = ({ workspaces }) => {
+  return (
+    <>
+      {workspaces.map((workspace) => (
+        <div key={`workspace-${workspace.id}`}>
+          <Link to={`/workspaces/${workspace.id}`}>
+            <WorkspaceListItem>{workspace.name}</WorkspaceListItem>
+            <Hr />
+          </Link>
+        </div>
+      ))}
+    </>
+  );
+};
+
 const WorkspacesPage = () => {
   const auth = useSelector((state) => state.auth);
   const app = useSelector((state) => state.app);
@@ -29,14 +44,7 @@ const WorkspacesPage = () => {
       <Main>
         <Card>
           <Subtitle>Workspaces for {auth.userInfo.email}</Subtitle>
-          {app.workspaces.map((workspace) => (
-            <div key={`workspace-${workspace.id}`}>
-              <Link to={`/workspaces/${workspace.id}`}>
-                <WorkspaceListItem>{workspace.name}</WorkspaceListItem>
-                <Hr />
-              </Link>
-            </div>
-          ))}
+          <WorkspaceItem workspaces={app.workspaces} />
         </Card>
       </Main>
       <Footer>

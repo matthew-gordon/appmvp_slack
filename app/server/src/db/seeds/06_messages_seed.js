@@ -6,13 +6,13 @@ exports.seed = async (knex) => {
   await knex('messages').insert([
     {
       id: 1,
-      channelId: 1,
+      channelId: 3,
       authorId: 1,
       text: 'this is the first message!',
     },
     {
       id: 2,
-      channelId: 1,
+      channelId: 3,
       authorId: 1,
       text: 'this is another message!',
     },

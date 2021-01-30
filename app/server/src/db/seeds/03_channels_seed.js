@@ -8,6 +8,7 @@ exports.seed = async (knex) => {
       id: 1,
       workspaceId: 1,
       name: 'general',
+      default: true,
     },
     {
       id: 2,
@@ -18,6 +19,7 @@ exports.seed = async (knex) => {
       id: 3,
       workspaceId: 2,
       name: 'general',
+      default: true,
     },
     {
       id: 4,

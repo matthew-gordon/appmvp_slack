@@ -7,7 +7,14 @@ router.get('/client/:userId/workspaces', async (req, res) => {
   try {
     const workspaces = await db('workspaces')
       .where({ ownerId: req.params.userId })
-      .select();
+      .select([
+        'workspaces.id',
+        'workspaces.name',
+        'workspaces.cname',
+        db.raw('json_agg(channels.*) as channels'),
+      ])
+      .leftJoin('channels', 'workspaces.id', 'channels.workspaceId')
+      .groupBy('workspaces.id');
 
     res.status(200).json({
       status: 'success',
@@ -27,7 +34,22 @@ router.get('/workspaces/:workspaceId/data', async (req, res) => {
 
     const workspace = await db('workspaces').where({ id: workspaceId }).first();
 
-    const channels = await db('channels').where({ workspaceId }).select();
+    const channels = await db('channels')
+      .where({ workspaceId })
+      .select([
+        'channels.id',
+        'channels.name',
+        db.raw('json_agg(messages.*) as messages'),
+      ])
+      .leftJoin('messages', 'channels.id', 'messages.channelId')
+      .groupBy('channels.id');
+
+    // TODO MAKE DEFAULT 1ST MESSAGE
+    const formattedChannels = channels.map((channel) => {
+      return channel.messages[0] === null
+        ? { ...channel, messages: [] }
+        : channel;
+    });
 
     const directMessages = await db('users')
       .distinctOn('users.id', 'users.username')
@@ -43,7 +65,7 @@ router.get('/workspaces/:workspaceId/data', async (req, res) => {
     res.status(200).json({
       status: 'success',
       name: workspace.name,
-      channels,
+      channels: formattedChannels,
       directMessages: Array.isArray(directMessages)
         ? directMessages.filter((member) => member.id !== res.locals.user.id)
         : [],

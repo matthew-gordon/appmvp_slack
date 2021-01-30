@@ -16,8 +16,6 @@ export const getWorkspaceData = ({ workspaceId }) => {
 
       const responseBody = await res.json();
 
-      console.log(responseBody);
-
       dispatch(workspaceDataSuccess(responseBody));
     } catch (err) {
       dispatch(workspacesFailure(err.message));

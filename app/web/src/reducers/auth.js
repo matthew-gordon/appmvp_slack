@@ -4,11 +4,18 @@ const token = localStorage.getItem('token');
 const expiresAt = localStorage.getItem('expiresAt');
 const userInfo = localStorage.getItem('userInfo');
 
+const isAuthenticated = () => {
+  if (!token || !expiresAt) {
+    return false;
+  }
+  return new Date().getTime() / 1000 < expiresAt;
+};
+
 const initialState = {
   token,
   expiresAt,
   userInfo: userInfo ? JSON.parse(userInfo) : {},
-  isLoggedIn: !!localStorage.getItem('token'),
+  isLoggedIn: isAuthenticated(),
 };
 
 const authReducer = (state = initialState, action) => {

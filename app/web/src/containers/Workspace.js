@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { NavLink, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import socketIOClient from 'socket.io-client';
 import { getWorkspaceData } from '../actions/workspace';
 import Channels from '../components/Workspace/Channels';
+import Messages from './Messages';
 
 const NEW_WORKSPACE_MESSAGE = 'NEW_WORKSPACE_MESSAGE';
 const SOCKET_SERVER = 'http://localhost:3000';
 
 const Workspace = () => {
   const socketRef = useRef();
-  const { workspaceId } = useParams();
+  const { workspaceId, channelId } = useParams();
   const auth = useSelector((state) => state.auth);
   const workspace = useSelector((state) => state.workspace);
   const dispatch = useDispatch();
@@ -40,26 +41,21 @@ const Workspace = () => {
     });
   };
 
-  // if (workspace && !workspace.channels.length) {
-  //   return null;
-  // }
+  if (workspace && !workspace.channels.length) {
+    return null;
+  }
+
+  const channelIdx = channelId
+    ? workspace.channels.findIndex(
+        (channel) => channel.id === parseInt(channelId)
+      )
+    : 0;
 
   return (
     <Container>
-      <Channels
-        user={auth.userInfo}
-        workspace={workspace}
-        channels={workspace.channels}
-        directMessages={workspace.directMessages}
-      />
+      <Channels user={auth.userInfo} />
       <Header>Header</Header>
-      <Messages>
-        {/* <MessageList>
-          {[{ content: 'moo' }].map((message, idx) => (
-            <MessageListItem key={idx}>{message.content}</MessageListItem>
-          ))}
-        </MessageList> */}
-      </Messages>
+      <Messages />
       <InputContainer>
         <Input
           type="text"
@@ -84,7 +80,7 @@ const Container = styled.div`
   display: grid;
   height: 100vh;
   grid-template-columns: 250px 1fr;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 1fr auto;
 `;
 
 // const Channels = styled.div`
@@ -120,29 +116,4 @@ const Input = styled.input`
   padding: 1em;
   outline: none;
   border: 1px solid #f2f2f2;
-`;
-
-const Messages = styled.div`
-  background-color: #ffffff;
-  grid-column: 2;
-  grid-row: 2;
-  padding: 0 1em;
-  overflow-y: scroll;
-  color: #fff;
-  padding: 1em;
-  text-align: center;
-`;
-
-const MessageList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-`;
-
-const MessageListItem = styled.li`
-  padding: 0.2em;
-  margin-top: 1em;
-  margin-bottom: 1em;
-  background-color: #f2f2f2;
 `;

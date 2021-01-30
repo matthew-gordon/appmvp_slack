@@ -1,35 +1,42 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Bubble = ({ on = true }) => (on ? <Green>●</Green> : '○');
 
-const Channel = ({ id, name }, workspaceId) => (
-  <StyledLink key={`channel-${id}`} to={`/view-workspace/${workspaceId}/${id}`}>
-    <SideBarListItem># {name}</SideBarListItem>
-  </StyledLink>
-);
+const Channel = ({ channel }) => {
+  const { workspaceId } = useParams();
 
-const User = ({ id, username }, workspaceId) => (
-  <StyledLink
-    key={`user-${id}`}
-    to={`/view-workspace/${workspaceId}/user/${id}`}
-  >
-    <SideBarListItem>
-      <Bubble /> {username}
-    </SideBarListItem>
-  </StyledLink>
-);
+  return (
+    <StyledLink
+      className={``}
+      key={`channel-${channel.id}`}
+      to={`/workspaces/${workspaceId}/${channel.id}`}
+    >
+      <SideBarListItem># {channel.name}</SideBarListItem>
+    </StyledLink>
+  );
+};
 
-export default function Channels({
-  channels,
-  directMessages,
-  workspace,
-  user,
-}) {
+const User = ({ id, username }) => {
+  const { workspaceId } = useParams();
+
+  return (
+    <StyledLink key={`user-${id}`} to={`/workspaces/${workspaceId}/user/${id}`}>
+      <SideBarListItem>
+        <Bubble /> {username}
+      </SideBarListItem>
+    </StyledLink>
+  );
+};
+
+const Channels = ({ user }) => {
   const location = useLocation();
+  const { workspaceId } = useParams();
+  const workspace = useSelector((state) => state.workspace);
   // const isOwner = workspace.ownerId === user.id;
 
   return (
@@ -44,7 +51,7 @@ export default function Channels({
             Channels
             <Link
               to={{
-                pathname: `/view-workspace/${workspace.id}/channel/new`,
+                pathname: `/workspaces/${workspaceId}/channel/new`,
                 state: { background: location },
               }}
             >
@@ -53,7 +60,9 @@ export default function Channels({
               </Add>
             </Link>
           </SideBarListHeader>
-          {channels.map((channel) => Channel(channel, workspace.id))}
+          {workspace.channels.map((channel) => (
+            <Channel key={channel.id} channel={channel} />
+          ))}
         </SideBarList>
       </div>
       <div>
@@ -64,19 +73,21 @@ export default function Channels({
               <FontAwesomeIcon icon={faPlusCircle} />
             </Add>
           </SideBarListHeader>
-          <StyledLink to={`/view-workspace/${workspace.id}/user/${user.id}`}>
+          <StyledLink to={`/workspaces/${workspaceId}/user/${user.id}`}>
             <SideBarListItem>
               <Bubble /> {user.username} <small>(you)</small>
             </SideBarListItem>
           </StyledLink>
-          {directMessages.map((user) => User(user, workspace.id))}
+          {workspace.directMessages.map((user) => (
+            <User key={user.id} user={user} />
+          ))}
         </SideBarList>
       </div>
       <div>
         <SideBarList>
           <StyledLink
             to={{
-              pathname: `/view-workspace/${workspace.id}/member/new`,
+              pathname: `/workspaces/${workspaceId}/member/new`,
               state: { background: location },
             }}
           >
@@ -86,7 +97,9 @@ export default function Channels({
       </div>
     </ChannelWrapper>
   );
-}
+};
+
+export default Channels;
 
 const StyledLink = styled(Link)`
   color: #999;

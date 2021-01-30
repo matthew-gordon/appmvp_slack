@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { createSocketServer } from './socketServer';
 import authRoutes from './routes/auth';
 import workspacesRoutes from './routes/workspaces';
+import channelsRoutes from './routes/channels';
 import user from './middleware/user';
 
 config();
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use(user);
 app.use(authRoutes);
 app.use(workspacesRoutes);
+app.use(channelsRoutes);
 
 let server;
 

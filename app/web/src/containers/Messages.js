@@ -1,49 +1,62 @@
 import React, { useEffect } from 'react';
-import styled from '@emotion/styled';
-import Messages from '../components/Workspace/Messages';
-import { gql, useQuery } from '@apollo/client';
-import moment from 'moment';
+import styled from 'styled-components';
+// import Messages from '../components/Workspace/Messages';
+// import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getChannelMessages } from '../actions/channel';
 
 const MessagesContainer = () => {
-  const dispatch = useDispatch();
-  const channel = useSelector(({ channel }) => channel);
   const { channelId } = useParams();
+  const dispatch = useDispatch();
+  const messages = useSelector(({ channel }) => channel.messages);
 
   useEffect(() => {
-    dispatch();
-  }, []);
+    if (channelId) {
+      dispatch(getChannelMessages({ channelId }));
+    }
+  }, [channelId]);
 
   return (
-    <Messages>
-      {data.getAllMessages.messages &&
-        data.getAllMessages.messages.map((message) => {
-          return (
-            <Message key={`message-${message.id}`}>
-              <MessageAuthor>
-                <strong>{message.author.username}</strong>{' '}
-                <small>{moment(message.createdAt).format('h:mm a')}</small>
-              </MessageAuthor>
-              <MessageText>{message.text}</MessageText>
-            </Message>
-          );
-        })}
-    </Messages>
+    <Container>
+      <MessageList>
+        {messages && messages.length ? (
+          messages.map((message) => (
+            <MessageListItem>{message.text}</MessageListItem>
+          ))
+        ) : (
+          <div>No messages yet! Be the first!!</div>
+        )}
+      </MessageList>
+    </Container>
   );
 };
 
 export default MessagesContainer;
 
-const Message = styled.div`
+const Container = styled.div`
+  background-color: #ffffff;
+  grid-column: 2;
+  grid-row: 2;
+  padding: 0 1em;
+  overflow-y: scroll;
+  color: #000;
+  padding: 1em;
+  text-align: center;
+`;
+
+const MessageList = styled.ul`
   display: flex;
   flex-direction: column;
-  padding: 10px 10px;
+  list-style: none;
+  text-align: left;
+  margin: 0;
+  padding: 0;
 `;
 
-const MessageAuthor = styled.div`
-  /* font-weight: 700; */
+const MessageListItem = styled.li`
+  padding: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  background-color: #f2f2f2;
 `;
-
-const MessageText = styled.div``;

@@ -13,7 +13,7 @@ const LoginForm = ({ loginUser }) => {
     onSubmit: ({ email, password }) => {
       loginUser({ email, password }, (success, { user }) => {
         if (success && !!user) {
-          history.push(`/client/${user.id}/workspaces`);
+          history.push(`/get-started`);
         }
       });
     },
