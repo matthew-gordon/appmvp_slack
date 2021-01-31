@@ -14,7 +14,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         name: action.payload.name,
-        private: action.payload.private,
+        public: action.payload.public,
         default: action.payload.default,
         members: action.payload.members,
         messages: action.payload.messages,

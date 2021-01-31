@@ -29,8 +29,6 @@ router.post('/auth/login', async (req, res) => {
       const decodedToken = jwt.decode(token);
       const expiresAt = decodedToken.exp;
 
-      res.cookie('token', token);
-
       res.json({
         status: 'success',
         message: 'User logged in!',

@@ -61,7 +61,7 @@ export default Channel;
 
 const Messages = styled.div`
   background-color: #ffffff;
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 2;
   padding: 0 1em;
   overflow-y: scroll;
@@ -88,7 +88,7 @@ const MessageListItem = styled.li`
 
 const Header = styled.div`
   background-color: #ffffff;
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 1;
   color: #333;
   border-bottom: 1px solid #f2f2f2;
@@ -98,7 +98,7 @@ const Header = styled.div`
 
 const InputContainer = styled.div`
   background-color: #fff;
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 3;
   color: #fff;
   padding: 1em;

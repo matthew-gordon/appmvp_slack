@@ -3,7 +3,7 @@ import db from '../db';
 
 const router = express.Router();
 
-router.get('/client/:userId/workspaces', async (req, res) => {
+router.get('/users/:userId/workspaces', async (req, res) => {
   try {
     const workspaces = await db('workspaces')
       .where({ ownerId: req.params.userId })
@@ -73,6 +73,7 @@ router.get('/workspaces/:workspaceId/data', async (req, res) => {
 
     res.status(200).json({
       status: 'success',
+      id: workspace.id,
       name: workspace.name,
       defaultChannel: channels
         .filter((channel) => channel.default === true)

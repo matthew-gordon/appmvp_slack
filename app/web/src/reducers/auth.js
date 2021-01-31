@@ -15,6 +15,7 @@ const initialState = {
   token,
   expiresAt,
   userInfo: userInfo ? JSON.parse(userInfo) : {},
+  workspaces: [],
   isLoggedIn: isAuthenticated(),
 };
 
@@ -25,6 +26,7 @@ const authReducer = (state = initialState, action) => {
         token: action.payload.token,
         expiresAt: action.payload.expiresAt,
         userInfo: action.payload.userInfo,
+        workspaces: action.payload.workspaces,
         isLoggedIn: true,
       };
     }

@@ -1,65 +1,30 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { setActiveChannel } from '../../actions/workspace';
+import User from '../components/Channels/User';
+import Bubble from '../components/Channels/Bubble';
+import Channel from '../components/Channels/Channel';
+import StyledLink from '../components/StyledLink';
+import SideBarListItem from '../components/SideBarListItem';
+import SideBarHeader from '../components/SideBarHeader';
 
-const Bubble = ({ on = true }) => (on ? <Green>●</Green> : '○');
-
-const Channel = ({ channel }) => {
-  const { workspaceId, channelId } = useParams();
-  const workspace = useSelector((state) => state.workspace);
-  const dispatch = useDispatch();
-
-  const handleChannelClick = () => {
-    dispatch(setActiveChannel(channel));
-  };
-
-  const isActive = workspace.activeChannel.id === parseInt(channel.id);
-
-  return (
-    <StyledLink
-      key={`channel-${channel.id}`}
-      to={`/workspaces/${workspaceId}/${channel.id}`}
-    >
-      <SideBarListItem
-        className={`${isActive ? 'active' : ''}`}
-        onClick={handleChannelClick}
-      >
-        # {channel.name}
-      </SideBarListItem>
-    </StyledLink>
-  );
-};
-
-const User = ({ id, username }) => {
+const Channels = ({ user, channels }) => {
   const { workspaceId } = useParams();
-
-  return (
-    <StyledLink key={`user-${id}`} to={`/workspaces/${workspaceId}/user/${id}`}>
-      <SideBarListItem>
-        <Bubble /> {username}
-      </SideBarListItem>
-    </StyledLink>
-  );
-};
-
-const Channels = ({ user }) => {
   const location = useLocation();
-  const { workspaceId } = useParams();
   const workspace = useSelector((state) => state.workspace);
 
   return (
     <ChannelWrapper>
-      <div>
+      <>
         <WorkspaceNameHeader>{workspace.name}</WorkspaceNameHeader>
         {user.username}
-      </div>
-      <div>
+      </>
+      <>
         <SideBarList style={{ textAlign: 'left' }}>
-          <SideBarListHeader>
+          <SideBarHeader>
             Channels
             <Link
               to={{
@@ -71,21 +36,21 @@ const Channels = ({ user }) => {
                 <FontAwesomeIcon icon={faPlusCircle} />
               </Add>
             </Link>
-          </SideBarListHeader>
-          {workspace.channels.length &&
-            workspace.channels.map((channel) => (
+          </SideBarHeader>
+          {channels.length &&
+            channels.map((channel) => (
               <Channel key={channel.id} channel={channel} />
             ))}
         </SideBarList>
-      </div>
-      <div>
+      </>
+      <>
         <SideBarList>
-          <SideBarListHeader>
+          <SideBarHeader>
             Direct Messages
             <Add className="material-icons">
               <FontAwesomeIcon icon={faPlusCircle} />
             </Add>
-          </SideBarListHeader>
+          </SideBarHeader>
           <StyledLink to={`/workspaces/${workspaceId}/user/${user.id}`}>
             <SideBarListItem>
               <Bubble /> {user.username} <small>(you)</small>
@@ -95,8 +60,8 @@ const Channels = ({ user }) => {
             <User key={user.id} user={user} />
           ))}
         </SideBarList>
-      </div>
-      <div>
+      </>
+      <>
         <SideBarList>
           <StyledLink
             to={{
@@ -107,27 +72,16 @@ const Channels = ({ user }) => {
             <SideBarListItem> + invite people</SideBarListItem>
           </StyledLink>
         </SideBarList>
-      </div>
+      </>
     </ChannelWrapper>
   );
 };
 
 export default Channels;
 
-const StyledLink = styled(Link)`
-  color: #999;
-  &:focus,
-  &:hover,
-  &:visited,
-  &:link,
-  &:active {
-    text-decoration: none;
-  }
-`;
-
 const ChannelWrapper = styled.div`
   background-color: #52364e;
-  grid-column: 1;
+  grid-column: 2;
   grid-row: 1 / 4;
   color: #fff;
   text-align: center;
@@ -147,26 +101,6 @@ const SideBarList = styled.ul`
   text-align: left;
 `;
 
-const SideBarListItem = styled.li`
-  padding: 6px;
-  cursor: pointer;
-  font-weight: 300;
-  /* transition: background 0.2s ease-in; */
-  &:hover {
-    background: #3e313c;
-  }
-  /* &:active,
-  &:focus {
-    color: #fff;
-    background: cornflowerblue;
-  } */
-
-  &.active {
-    background: cornflowerblue;
-    color: #fff;
-  }
-`;
-
 const Add = styled.i`
   color: #fff;
   font-size: 1em;
@@ -177,14 +111,4 @@ const Add = styled.i`
     cursor: pointer;
     color: rgba(255, 255, 255, 1);
   }
-`;
-
-const SideBarListHeader = styled.li`
-  display: flex;
-  align-items: center;
-  padding: 1em;
-`;
-
-const Green = styled.span`
-  color: #38978d;
 `;

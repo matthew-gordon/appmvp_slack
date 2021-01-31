@@ -1,14 +1,17 @@
 import { GET_WORKSPACES, WORKSPACES_ERROR } from '../constants/types';
 
-export const getWorkspaces = ({ id }) => {
+export const getWorkspaces = ({ userId }) => {
   return async (dispatch) => {
     try {
-      const res = await fetch(`http://localhost:3000/client/${id}/workspaces`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const res = await fetch(
+        `http://localhost:3000/users/${userId}/workspaces`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       const responseBody = await res.json();
 
