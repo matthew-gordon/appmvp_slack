@@ -1,22 +1,35 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { setActiveChannel } from '../../actions/workspace';
 
 const Bubble = ({ on = true }) => (on ? <Green>●</Green> : '○');
 
 const Channel = ({ channel }) => {
-  const { workspaceId } = useParams();
+  const { workspaceId, channelId } = useParams();
+  const workspace = useSelector((state) => state.workspace);
+  const dispatch = useDispatch();
+
+  const handleChannelClick = () => {
+    dispatch(setActiveChannel(channel));
+  };
+
+  const isActive = workspace.activeChannel.id === parseInt(channel.id);
 
   return (
     <StyledLink
-      className={``}
       key={`channel-${channel.id}`}
       to={`/workspaces/${workspaceId}/${channel.id}`}
     >
-      <SideBarListItem># {channel.name}</SideBarListItem>
+      <SideBarListItem
+        className={`${isActive ? 'active' : ''}`}
+        onClick={handleChannelClick}
+      >
+        # {channel.name}
+      </SideBarListItem>
     </StyledLink>
   );
 };
@@ -37,7 +50,6 @@ const Channels = ({ user }) => {
   const location = useLocation();
   const { workspaceId } = useParams();
   const workspace = useSelector((state) => state.workspace);
-  // const isOwner = workspace.ownerId === user.id;
 
   return (
     <ChannelWrapper>
@@ -60,9 +72,10 @@ const Channels = ({ user }) => {
               </Add>
             </Link>
           </SideBarListHeader>
-          {workspace.channels.map((channel) => (
-            <Channel key={channel.id} channel={channel} />
-          ))}
+          {workspace.channels.length &&
+            workspace.channels.map((channel) => (
+              <Channel key={channel.id} channel={channel} />
+            ))}
         </SideBarList>
       </div>
       <div>
@@ -138,8 +151,19 @@ const SideBarListItem = styled.li`
   padding: 6px;
   cursor: pointer;
   font-weight: 300;
+  /* transition: background 0.2s ease-in; */
   &:hover {
     background: #3e313c;
+  }
+  /* &:active,
+  &:focus {
+    color: #fff;
+    background: cornflowerblue;
+  } */
+
+  &.active {
+    background: cornflowerblue;
+    color: #fff;
   }
 `;
 

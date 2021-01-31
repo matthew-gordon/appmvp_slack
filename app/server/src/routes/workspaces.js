@@ -18,7 +18,16 @@ router.get('/client/:userId/workspaces', async (req, res) => {
 
     res.status(200).json({
       status: 'success',
-      workspaces,
+      workspaces: [
+        ...workspaces.map((workspace) => {
+          return {
+            ...workspace,
+            defaultChannel: workspace.channels
+              .filter((channel) => channel.default === true)
+              .pop(),
+          };
+        }),
+      ],
     });
   } catch (err) {
     res.status(500).json({
@@ -34,13 +43,13 @@ router.get('/workspaces/:workspaceId/data', async (req, res) => {
 
     const workspace = await db('workspaces').where({ id: workspaceId }).first();
 
+    const owner = await db('users')
+      .where({ id: workspace.ownerId })
+      .first(['id', 'username', 'email']);
+
     const channels = await db('channels')
       .where({ workspaceId })
-      .select([
-        'channels.id',
-        'channels.name',
-        db.raw('json_agg(messages.*) as messages'),
-      ])
+      .select(['channels.*', db.raw('json_agg(messages.*) as messages')])
       .leftJoin('messages', 'channels.id', 'messages.channelId')
       .groupBy('channels.id');
 
@@ -65,10 +74,14 @@ router.get('/workspaces/:workspaceId/data', async (req, res) => {
     res.status(200).json({
       status: 'success',
       name: workspace.name,
+      defaultChannel: channels
+        .filter((channel) => channel.default === true)
+        .pop(),
       channels: formattedChannels,
       directMessages: Array.isArray(directMessages)
         ? directMessages.filter((member) => member.id !== res.locals.user.id)
         : [],
+      owner,
     });
   } catch (err) {
     res.status(500).json({

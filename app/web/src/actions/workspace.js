@@ -1,4 +1,8 @@
-import { GET_WORKSPACE_DATA, WORKSPACES_ERROR } from '../constants/types';
+import {
+  GET_WORKSPACE_DATA,
+  WORKSPACES_ERROR,
+  SET_ACTIVE_CHANNEL,
+} from '../constants/types';
 
 export const getWorkspaceData = ({ workspaceId }) => {
   return async (dispatch) => {
@@ -20,6 +24,13 @@ export const getWorkspaceData = ({ workspaceId }) => {
     } catch (err) {
       dispatch(workspacesFailure(err.message));
     }
+  };
+};
+
+export const setActiveChannel = (payload) => {
+  return {
+    type: SET_ACTIVE_CHANNEL,
+    payload,
   };
 };
 

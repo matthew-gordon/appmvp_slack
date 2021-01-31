@@ -1,4 +1,8 @@
-import { GET_WORKSPACE_DATA, WORKSPACE_UNLOADED } from '../constants/types';
+import {
+  GET_WORKSPACE_DATA,
+  WORKSPACE_UNLOADED,
+  SET_ACTIVE_CHANNEL,
+} from '../constants/types';
 
 const initalState = {
   name: null,
@@ -6,22 +10,28 @@ const initalState = {
   directMessages: [],
   defaultChannel: null,
   activeChannel: null,
+  owner: null,
 };
 
 const workspaceReducer = (state = initalState, action) => {
   switch (action.type) {
     case GET_WORKSPACE_DATA: {
-      const defaultChannel = action.payload.channels
-        .filter((channel) => channel.default === true)
-        .pop();
-
       return {
         ...state,
         name: action.payload.name,
         channels: action.payload.channels,
-        defaultChannel,
-        activeChannel: defaultChannel,
+        owner: action.payload.owner,
+        defaultChannel: action.payload.defaultChannel,
+        activeChannel: !state.activeChannel
+          ? action.payload.defaultChannel
+          : state.activeChannel,
         directMessages: action.payload.directMessages,
+      };
+    }
+    case SET_ACTIVE_CHANNEL: {
+      return {
+        ...state,
+        activeChannel: action.payload,
       };
     }
     case WORKSPACE_UNLOADED:

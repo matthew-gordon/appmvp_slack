@@ -40,7 +40,7 @@ function App() {
             <GetStarted />
           </AuthenticatedRoute>
 
-          <AuthenticatedRoute path="/workspaces/:workspaceId/:channelId?">
+          <AuthenticatedRoute path="/workspaces/:workspaceId/:channelId">
             <Workspace />
           </AuthenticatedRoute>
 
