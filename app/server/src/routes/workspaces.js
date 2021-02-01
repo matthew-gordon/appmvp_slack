@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/users/:userId/workspaces', async (req, res) => {
   try {
-    const workspaces = await db('workspaces')
+    const ownedWorkspaces = await db('workspaces')
       .where({ ownerId: req.params.userId })
       .select([
         'workspaces.id',
@@ -15,6 +15,23 @@ router.get('/users/:userId/workspaces', async (req, res) => {
       ])
       .leftJoin('channels', 'workspaces.id', 'channels.workspaceId')
       .groupBy('workspaces.id');
+
+    const joinedWorkspaces = await db('user_workspaces')
+      .where({ userId: req.params.userId })
+      .andWhereNot({ ownerId: req.params.userId })
+      .select([
+        'workspaces.id',
+        'workspaces.name',
+        'workspaces.cname',
+        db.raw('json_agg(channels.*) as channels'),
+      ])
+      .leftJoin('workspaces', 'user_workspaces.workspaceId', 'workspaces.id')
+      .leftJoin('channels', 'workspaces.id', 'channels.workspaceId')
+      .groupBy('workspaces.id');
+
+    const workspaces = [...ownedWorkspaces, ...joinedWorkspaces];
+
+    console.log(workspaces);
 
     res.status(200).json({
       status: 'success',

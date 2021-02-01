@@ -39,10 +39,9 @@ export const newChannelMessage = ({ message }) => {
           }),
         }
       );
-
       const responseBody = await res.json();
 
-      dispatch(newChannelMessageSuccess(responseBody.messages));
+      dispatch(newChannelMessageSuccess(responseBody.message));
     } catch (err) {
       console.log(err);
     }

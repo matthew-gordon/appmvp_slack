@@ -1,4 +1,4 @@
-import { GET_CHANNEL_DATA, SET_ACTIVE_CHANNEL } from '../constants/types';
+import { GET_CHANNEL_DATA, NEW_CHANNEL_MESSAGE } from '../constants/types';
 
 const initialState = {
   name: null,
@@ -18,6 +18,12 @@ export default (state = initialState, action) => {
         default: action.payload.default,
         members: action.payload.members,
         messages: action.payload.messages,
+      };
+    }
+    case NEW_CHANNEL_MESSAGE: {
+      return {
+        ...state,
+        messages: state.messages.concat([action.payload]),
       };
     }
     default:

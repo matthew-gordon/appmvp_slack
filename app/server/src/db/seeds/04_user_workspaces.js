@@ -14,6 +14,16 @@ exports.seed = async (knex) => {
       userId: 1,
       workspaceId: 2,
     },
+    {
+      id: 3,
+      userId: 2,
+      workspaceId: 1,
+    },
+    {
+      id: 4,
+      userId: 2,
+      workspaceId: 2,
+    },
   ]);
 
   await knex.raw(

@@ -10,6 +10,7 @@ const Channel = ({ channel }) => {
   const dispatch = useDispatch();
 
   const handleChannelClick = () => {
+    console.log(channel);
     dispatch(setActiveChannel(channel));
   };
 

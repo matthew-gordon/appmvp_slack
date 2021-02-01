@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import socketIOClient from 'socket.io-client';
 import { NEW_CHANNEL_MESSAGE } from '../constants/types';
 import { getChannelData } from '../actions/channel';
+import { newChannelMessage } from '../actions/channel';
 
-const Channel = ({ socket }) => {
-  const { channelId } = useParams();
+const SOCKET_SERVER = 'http://localhost:3000';
+
+const Channel = () => {
+  const socketRef = useRef();
+  const { workspaceId, channelId } = useParams();
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
@@ -15,22 +20,24 @@ const Channel = ({ socket }) => {
   useEffect(() => {
     try {
       dispatch(getChannelData({ channelId }));
+
+      socketRef.current = socketIOClient(SOCKET_SERVER, {
+        query: { workspaceId },
+      });
+
+      socketRef.current.on(NEW_CHANNEL_MESSAGE, (message) => {
+        if (parseInt(channelId) === message.channelId) {
+          dispatch(newChannelMessage({ message }));
+        }
+      });
+
+      return () => {
+        socketRef.current.close();
+      };
     } catch (err) {
       console.log(err);
     }
-  }, [channelId]);
-
-  const handleKeyDown = (e) => {
-    if (e.key.toLowerCase() === 'enter') {
-      socket.current.emit(NEW_CHANNEL_MESSAGE, {
-        channelId: parseInt(channel.id),
-        senderId: socket.current.id,
-        userId: auth.userInfo.id,
-        content: message,
-      });
-      setMessage('');
-    }
-  };
+  }, [dispatch, workspaceId, channelId]);
 
   return (
     <>
@@ -47,10 +54,21 @@ const Channel = ({ socket }) => {
       <InputContainer>
         <Input
           type="text"
-          placeholder="message #team"
+          placeholder={`message #${channel.name}`}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => {
+            if (e.key.toLowerCase() === 'enter') {
+              socketRef.current.emit(NEW_CHANNEL_MESSAGE, {
+                workspaceId,
+                channelId: parseInt(channelId),
+                senderId: socketRef.current.id,
+                userId: auth.userInfo.id,
+                content: message,
+              });
+              setMessage('');
+            }
+          }}
         />
       </InputContainer>
     </>
