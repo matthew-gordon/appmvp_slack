@@ -11,11 +11,19 @@ const SOCKET_SERVER = 'http://localhost:3000';
 
 const Channel = () => {
   const socketRef = useRef();
+  const messagesEndRef = useRef();
+  const messagesContainerRef = useRef();
   const { workspaceId, channelId } = useParams();
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const channel = useSelector((state) => state.channel);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      scrollToBottom();
+    }
+  }, [channel.messages]);
 
   useEffect(() => {
     try {
@@ -39,16 +47,21 @@ const Channel = () => {
     }
   }, [dispatch, workspaceId, channelId]);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
       <Header>{channel.name}</Header>
       <Messages>
-        <MessageList>
+        <MessageList ref={messagesContainerRef}>
           {channel.messages.map((message) => (
             <MessageListItem key={message.messageId}>
               {message.text}
             </MessageListItem>
           ))}
+          <div ref={messagesEndRef} />
         </MessageList>
       </Messages>
       <InputContainer>

@@ -10,7 +10,6 @@ const Channel = ({ channel }) => {
   const dispatch = useDispatch();
 
   const handleChannelClick = () => {
-    console.log(channel);
     dispatch(setActiveChannel(channel));
   };
 
@@ -19,17 +18,17 @@ const Channel = ({ channel }) => {
   };
 
   return (
-    <SideBarListItem
-      className={`${isActive(channel) ? 'active' : ''}`}
-      onClick={handleChannelClick}
+    <StyledLink
+      key={`channel-${channel.id}`}
+      to={`/workspaces/${workspaceId}/${channel.id}`}
     >
-      <StyledLink
-        key={`channel-${channel.id}`}
-        to={`/workspaces/${workspaceId}/${channel.id}`}
+      <SideBarListItem
+        className={`${isActive(channel) ? 'active' : ''}`}
+        onClick={handleChannelClick}
       >
         # {channel.name}
-      </StyledLink>
-    </SideBarListItem>
+      </SideBarListItem>
+    </StyledLink>
   );
 };
 

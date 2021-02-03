@@ -24,7 +24,8 @@ router.get('/channels/:channelId/data', async (req, res) => {
         'messages.text',
         'messages.created_at',
         'messages.updated_at'
-      );
+      )
+      .orderBy('created_at', 'ASC');
 
     res.status(200).json({
       status: 'success',
@@ -43,8 +44,6 @@ router.get('/channels/:channelId/data', async (req, res) => {
 router.post('/channels/:channelId/messages/new', async (req, res) => {
   try {
     const { message } = req.body;
-
-    // console.log(channelId);
 
     const [newMessage] = await db('messages')
       .insert({

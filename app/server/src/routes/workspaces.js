@@ -31,8 +31,6 @@ router.get('/users/:userId/workspaces', async (req, res) => {
 
     const workspaces = [...ownedWorkspaces, ...joinedWorkspaces];
 
-    console.log(workspaces);
-
     res.status(200).json({
       status: 'success',
       workspaces: [

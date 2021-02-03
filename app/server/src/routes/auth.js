@@ -102,8 +102,6 @@ router.post('/auth/register', async (req, res) => {
         role,
       };
 
-      res.cookie('token', token);
-
       res.json({
         status: 'success',
         message: 'User created!',

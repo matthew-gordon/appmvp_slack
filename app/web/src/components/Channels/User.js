@@ -7,7 +7,6 @@ import SideBarListItem from '../SideBarListItem';
 
 const User = ({ user }) => {
   const { workspaceId, userId } = useParams();
-  // const dispatch = useDispatch();
 
   const handleChannelClick = () => {};
 
@@ -16,17 +15,17 @@ const User = ({ user }) => {
   };
 
   return (
-    <SideBarListItem
-      className={`${isActive(user) ? 'active' : ''}`}
-      onClick={handleChannelClick}
+    <StyledLink
+      key={`user-${user.id}`}
+      to={`/workspaces/${workspaceId}/user/${user.id}`}
     >
-      <StyledLink
-        key={`user-${user.id}`}
-        to={`/workspaces/${workspaceId}/user/${user.id}`}
+      <SideBarListItem
+        className={`${isActive(user) ? 'active' : ''}`}
+        onClick={handleChannelClick}
       >
         <Bubble /> {user.username}
-      </StyledLink>
-    </SideBarListItem>
+      </SideBarListItem>
+    </StyledLink>
   );
 };
 
