@@ -1,14 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const SideBarLink = ({ children, ...rest }) => {
-  return <StyledLink {...rest}>{children}</StyledLink>;
+  return (
+    <StyledLink activeClassName="active" {...rest}>
+      {children}
+    </StyledLink>
+  );
 };
 
 export default SideBarLink;
 
-const StyledLink = styled(Link)`
+const StyledLink = styled(NavLink)`
   color: #fff;
   &:focus,
   &:hover,
@@ -16,5 +20,15 @@ const StyledLink = styled(Link)`
   &:link,
   &:active {
     text-decoration: none;
+  }
+
+  &:hover,
+  &:active {
+    background: #3e313c;
+  }
+
+  &.active {
+    background: cornflowerblue;
+    color: #fff;
   }
 `;

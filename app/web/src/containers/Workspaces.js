@@ -17,7 +17,7 @@ const Workspaces = ({ workspaces }) => {
             <WorkspaceLink
               className={`${isActive(workspace) ? 'workspace-active' : ''}`}
               key={workspace.id}
-              to={`/workspaces/${workspace.id}/${workspace.defaultChannel.id}`}
+              to={`/workspaces/${workspace.id}/channel/${workspace.defaultChannel.id}`}
             >
               {workspace.name.charAt(0).toUpperCase()}
             </WorkspaceLink>

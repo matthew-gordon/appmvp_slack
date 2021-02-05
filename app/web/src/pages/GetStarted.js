@@ -32,7 +32,7 @@ const WorkspacesPage = () => {
           {workspaces.map((workspace) => (
             <div key={`workspace-${workspace.id}`}>
               <Link
-                to={`/workspaces/${workspace.id}/${workspace.defaultChannel.id}`}
+                to={`/workspaces/${workspace.id}/channel/${workspace.defaultChannel.id}`}
               >
                 <WorkspaceListItem>{workspace.name}</WorkspaceListItem>
                 <Hr />

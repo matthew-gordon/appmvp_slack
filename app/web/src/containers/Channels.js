@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +12,7 @@ import SideBarListItem from '../components/SideBarListItem';
 import SideBarHeader from '../components/SideBarHeader';
 
 const Channels = ({ user, channels }) => {
+  const { url } = useRouteMatch();
   const { workspaceId } = useParams();
   const location = useLocation();
   const workspace = useSelector((state) => state.workspace);
@@ -51,7 +52,7 @@ const Channels = ({ user, channels }) => {
               <FontAwesomeIcon icon={faPlusCircle} />
             </Add>
           </SideBarHeader>
-          <StyledLink to={`/workspaces/${workspaceId}/user/${user.id}`}>
+          <StyledLink to={`${url}/conversation/${user.id}`}>
             <SideBarListItem>
               <Bubble /> {user.username} <small>(you)</small>
             </SideBarListItem>
@@ -61,7 +62,7 @@ const Channels = ({ user, channels }) => {
           ))}
         </SideBarList>
       </>
-      <>
+      {/* <>
         <SideBarList>
           <StyledLink
             to={{
@@ -72,7 +73,7 @@ const Channels = ({ user, channels }) => {
             <SideBarListItem> + invite people</SideBarListItem>
           </StyledLink>
         </SideBarList>
-      </>
+      </> */}
     </ChannelWrapper>
   );
 };

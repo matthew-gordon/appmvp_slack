@@ -11,13 +11,4 @@ const SideBarListItem = styled.li`
   padding: 6px;
   cursor: pointer;
   font-weight: 300;
-
-  &:hover {
-    background: #3e313c;
-  }
-
-  &.active {
-    background: cornflowerblue;
-    color: #fff;
-  }
 `;

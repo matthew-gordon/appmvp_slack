@@ -1,12 +1,12 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
+import { useParams, useRouteMatch } from 'react-router-dom';
 import Bubble from '../Channels/Bubble';
 import StyledLink from '../StyledLink';
 import SideBarListItem from '../SideBarListItem';
 
 const User = ({ user }) => {
-  const { workspaceId, userId } = useParams();
+  const { url } = useRouteMatch();
+  const { userId } = useParams();
 
   const handleChannelClick = () => {};
 
@@ -15,10 +15,7 @@ const User = ({ user }) => {
   };
 
   return (
-    <StyledLink
-      key={`user-${user.id}`}
-      to={`/workspaces/${workspaceId}/user/${user.id}`}
-    >
+    <StyledLink key={`user-${user.id}`} to={`${url}/conversation/${user.id}`}>
       <SideBarListItem
         className={`${isActive(user) ? 'active' : ''}`}
         onClick={handleChannelClick}

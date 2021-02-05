@@ -1,31 +1,29 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useRouteMatch, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveChannel } from '../../actions/workspace';
 import StyledLink from '../StyledLink';
 import SideBarListItem from '../SideBarListItem';
+import PathToRegexp from 'path-to-regex';
 
 const Channel = ({ channel }) => {
-  const { workspaceId, channelId } = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
+  let { url } = useRouteMatch();
+  const pathRe = new PathToRegexp(
+    '/workspace/:workspaceId?/channel/:channelId?'
+  );
 
   const handleChannelClick = () => {
     dispatch(setActiveChannel(channel));
   };
 
-  const isActive = (channel) => {
-    return channel.id === parseInt(channelId);
-  };
-
   return (
     <StyledLink
       key={`channel-${channel.id}`}
-      to={`/workspaces/${workspaceId}/${channel.id}`}
+      to={`${url}/channel/${channel.id}`}
     >
-      <SideBarListItem
-        className={`${isActive(channel) ? 'active' : ''}`}
-        onClick={handleChannelClick}
-      >
+      <SideBarListItem onClick={handleChannelClick}>
         # {channel.name}
       </SideBarListItem>
     </StyledLink>
