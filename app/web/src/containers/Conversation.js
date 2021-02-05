@@ -1,13 +1,79 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 
 const Conversation = () => {
-  const params = useParams();
-  console.log(params);
+  // const socketRef = useRef();
+  const messagesEndRef = useRef();
+  const [message, setMessage] = useState('');
+  // const dispatch = useDispatch();
+  // const auth = useSelector((state) => state.auth);
+
+  // useEffect(() => {
+  //   if (messagesEndRef.current) {
+  //     scrollToBottom();
+  //   }
+  // }, [channel.messages]);
+
+  // useEffect(() => {
+  //   try {
+  //     dispatch(getChannelData({ channelId }));
+
+  //     socketRef.current = socketIOClient(SOCKET_SERVER, {
+  //       query: { workspaceId },
+  //     });
+
+  //     socketRef.current.on(NEW_CHANNEL_MESSAGE, (message) => {
+  //       if (parseInt(channelId) === message.channelId) {
+  //         dispatch(newChannelMessage({ message }));
+  //       }
+  //     });
+
+  //     return () => {
+  //       socketRef.current.close();
+  //     };
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }, [dispatch, workspaceId, channelId]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
-      <h1>Conversations</h1>
+      <Header>Conversation</Header>
+      <Messages>
+        <MessageList>
+          {/* {channel.messages.map((message) => (
+            <MessageListItem key={message.messageId}>
+              {message.text}
+            </MessageListItem>
+          ))} */}
+          <div ref={messagesEndRef} />
+        </MessageList>
+      </Messages>
+      <InputContainer>
+        <Input
+          type="text"
+          placeholder={`message #conversation`}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          // onKeyDown={(e) => {
+          //   if (e.key.toLowerCase() === 'enter') {
+          //     socketRef.current.emit(NEW_CHANNEL_MESSAGE, {
+          //       workspaceId,
+          //       channelId: parseInt(channelId),
+          //       senderId: socketRef.current.id,
+          //       userId: auth.userInfo.id,
+          //       content: message,
+          //     });
+          //     setMessage('');
+          //   }
+          // }}
+        />
+      </InputContainer>
     </>
   );
 };

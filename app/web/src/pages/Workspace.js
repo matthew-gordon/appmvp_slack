@@ -13,44 +13,15 @@ import { getWorkspaces } from '../actions/app';
 import Channels from '../containers/Channels';
 import Workspaces from '../containers/Workspaces';
 import Channel from '../containers/Channel';
-
-function Topic() {
-  // The <Route> that rendered this component has a
-  // path of `/topics/:topicId`. The `:topicId` portion
-  // of the URL indicates a placeholder that we can
-  // get from `useParams()`.
-  let { channelId } = useParams();
-
-  return (
-    <div>
-      <h2>channelIds</h2>
-      <h3>{channelId}</h3>
-    </div>
-  );
-}
-
-function Conversation() {
-  // The <Route> that rendered this component has a
-  // path of `/topics/:topicId`. The `:topicId` portion
-  // of the URL indicates a placeholder that we can
-  // get from `useParams()`.
-  let { conversationId } = useParams();
-
-  return (
-    <div>
-      <h2>Conversations</h2>
-      <h3>{conversationId}</h3>
-    </div>
-  );
-}
+import Conversation from '../containers/Conversation';
 
 const Workspace = () => {
   const { workspaceId, channelId } = useParams();
+  let { path } = useRouteMatch();
   const auth = useSelector((state) => state.auth);
   const app = useSelector((state) => state.app);
   const workspace = useSelector((state) => state.workspace);
   const dispatch = useDispatch();
-  let { path, url } = useRouteMatch();
 
   useEffect(() => {
     dispatch(getWorkspaceData({ workspaceId }));

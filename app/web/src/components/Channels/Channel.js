@@ -1,18 +1,13 @@
 import React from 'react';
-import { useParams, useRouteMatch, useLocation } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveChannel } from '../../actions/workspace';
 import StyledLink from '../StyledLink';
 import SideBarListItem from '../SideBarListItem';
-import PathToRegexp from 'path-to-regex';
 
 const Channel = ({ channel }) => {
-  const location = useLocation();
-  const dispatch = useDispatch();
   let { url } = useRouteMatch();
-  const pathRe = new PathToRegexp(
-    '/workspace/:workspaceId?/channel/:channelId?'
-  );
+  const dispatch = useDispatch();
 
   const handleChannelClick = () => {
     dispatch(setActiveChannel(channel));
