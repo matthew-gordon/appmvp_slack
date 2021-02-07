@@ -107,4 +107,19 @@ router.get('/workspaces/:workspaceId/data', async (req, res) => {
   }
 });
 
+router.get('/workspaces/:workspaceId/unread-messages', async (req, res) => {
+  try {
+    const { workspaceId } = req.params;
+
+    res.status(200).json({
+      count: 4,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'err',
+      message: err.message,
+    });
+  }
+});
+
 export default router;

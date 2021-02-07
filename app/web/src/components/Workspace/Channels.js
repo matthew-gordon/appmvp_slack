@@ -4,12 +4,12 @@ import { Link, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import User from '../components/Channels/User';
-import Bubble from '../components/Channels/Bubble';
-import Channel from '../components/Channels/Channel';
-import StyledLink from '../components/StyledLink';
-import SideBarListItem from '../components/SideBarListItem';
-import SideBarHeader from '../components/SideBarHeader';
+import User from '../Channels/User';
+import Bubble from '../Channels/Bubble';
+import Channel from '../Channels/Channel';
+import StyledLink from '../StyledLink';
+import SideBarListItem from '../SideBarListItem';
+import SideBarHeader from '../SideBarHeader';
 
 const Channels = ({ user, channels }) => {
   const { url } = useRouteMatch();

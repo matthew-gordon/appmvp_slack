@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Workspaces from './Workspaces';
 import Channels from './Channels';
 

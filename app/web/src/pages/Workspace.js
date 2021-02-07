@@ -10,8 +10,8 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { getWorkspaceData } from '../actions/workspace';
 import { getWorkspaces } from '../actions/app';
-import Channels from '../containers/Channels';
-import Workspaces from '../containers/Workspaces';
+import Channels from '../components/Workspace/Channels';
+import Workspaces from '../components/Workspace/Workspaces';
 import Channel from '../containers/Channel';
 import Conversation from '../containers/Conversation';
 

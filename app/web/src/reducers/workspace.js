@@ -2,6 +2,7 @@ import {
   GET_WORKSPACE_DATA,
   WORKSPACE_UNLOADED,
   SET_ACTIVE_CHANNEL,
+  GET_WORKSPACE_UNREAD_MESSAGE_COUNT,
 } from '../constants/types';
 
 const initalState = {
@@ -11,6 +12,7 @@ const initalState = {
   defaultChannel: null,
   activeChannel: null,
   owner: null,
+  unreadMessages: 0,
 };
 
 const workspaceReducer = (state = initalState, action) => {
@@ -35,6 +37,12 @@ const workspaceReducer = (state = initalState, action) => {
         activeChannel: action.payload,
       };
     }
+    case GET_WORKSPACE_UNREAD_MESSAGE_COUNT:
+      console.log(action);
+      return {
+        ...state,
+        unreadMessages: action.payload,
+      };
     case WORKSPACE_UNLOADED:
       return {};
     default:
