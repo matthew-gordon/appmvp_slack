@@ -111,8 +111,32 @@ router.get('/workspaces/:workspaceId/unread-messages', async (req, res) => {
   try {
     const { workspaceId } = req.params;
 
+    const workspace = await db('workspaces').first().where({ id: workspaceId });
+
+    if (!workspace) {
+      throw new Error('workspace does not exist.');
+    }
+
+    const channels = await db('channels')
+      .select()
+      .where({ workspaceId: workspace.id });
+
+    const [messageStats] = await db('channel_message_stats')
+      .select()
+      .whereIn(
+        'channelId',
+        channels.map((channel) => channel.id)
+      )
+      .andWhere({
+        userId: res.locals.user.id,
+        read: false,
+      })
+      .count();
+
+    const totalCount = parseInt(messageStats.count, 10);
+
     res.status(200).json({
-      count: 4,
+      count: totalCount,
     });
   } catch (err) {
     res.status(500).json({

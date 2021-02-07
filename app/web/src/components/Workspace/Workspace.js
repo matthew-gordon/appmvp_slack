@@ -1,20 +1,52 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { NavLink, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import socketIOClient from 'socket.io-client';
 import { getWorkspaceUnreadMessageCount } from '../../actions/workspace';
+import { CLEAR_COUNT } from '../../constants/types';
+
+const UPDATE_UNREAD_MESSAGE_COUNT = 'UPDATE_UNREAD_MESSAGE_COUNT';
+const SOCKET_SERVER = 'http://localhost:3000';
 
 const Workspace = ({ workspace }) => {
   const { workspaceId } = useParams();
   const dispatch = useDispatch();
+  const socketRef = useRef();
+
   const unreadMessageCount = useSelector(
     (state) => state.workspace.unreadMessages
   );
 
-  console.log(unreadMessageCount);
+  useLayoutEffect(() => {
+    dispatch({ type: CLEAR_COUNT });
+  }, [workspaceId]);
 
   useEffect(() => {
     dispatch(getWorkspaceUnreadMessageCount({ workspaceId }));
+
+    socketRef.current = socketIOClient(SOCKET_SERVER, {
+      query: { workspaceId },
+    });
+
+    socketRef.current.on(UPDATE_UNREAD_MESSAGE_COUNT, (message) => {
+      const workspace = parseInt(workspaceId) === message.workspaceId;
+
+      console.log(`
+      
+      
+      
+      UPDATE THE COUNT
+      
+      
+      
+      `);
+    });
+
+    return () => {
+      // dispatch({ type: CLEAR_COUNT });
+      socketRef.current.close();
+    };
   }, [workspaceId]);
 
   const isActive = () => {
@@ -23,9 +55,11 @@ const Workspace = ({ workspace }) => {
 
   return (
     <Container>
-      {!isActive() && unreadMessageCount > 0 && (
-        <Badge>{unreadMessageCount}</Badge>
-      )}
+      <Badge
+        className={`${!isActive() && unreadMessageCount > 0 ? 'active' : ''}`}
+      >
+        {unreadMessageCount}
+      </Badge>
       <WorkspaceLink
         key={`workspace-${workspace.id}`}
         isActive={isActive}
@@ -92,4 +126,10 @@ const Badge = styled.div`
   color: #fff;
   font-size: 0.75em;
   font-weight: 700;
+  transform: scale(0);
+  transition: all 0.05s ease-in-out;
+
+  &.active {
+    transform: scale(1);
+  }
 `;

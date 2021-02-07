@@ -45,6 +45,18 @@ router.post('/channels/:channelId/messages/new', async (req, res) => {
   try {
     const { message } = req.body;
 
+    const channel = await db('channels')
+      .where({ id: message.channelId })
+      .first();
+
+    if (!channel) {
+      throw new Error('channel does not exist.');
+    }
+
+    const channelMembers = await db('user_channels')
+      .select('userId')
+      .where({ channelId: message.channelId });
+
     const [newMessage] = await db('messages')
       .insert({
         channelId: message.channelId,
@@ -52,6 +64,22 @@ router.post('/channels/:channelId/messages/new', async (req, res) => {
         text: message.content,
       })
       .returning('*');
+
+    const newMessages = channelMembers
+      .filter((member) => member.userId !== res.locals.user.id)
+      .map((member) => ({
+        channelId: channel.id,
+        userId: member.userId,
+        messageId: newMessage.id,
+      }));
+
+    if (newMessages && newMessages.length > 0) {
+      try {
+        await db('channel_message_stats').insert(newMessages).returning('*');
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
     res.status(200).json({
       status: 'success',

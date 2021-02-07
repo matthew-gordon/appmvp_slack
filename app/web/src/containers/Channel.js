@@ -30,7 +30,7 @@ const Channel = () => {
       dispatch(getChannelData({ channelId }));
 
       socketRef.current = socketIOClient(SOCKET_SERVER, {
-        query: { workspaceId, userId: auth.userInfo.id },
+        query: { workspaceId },
       });
 
       socketRef.current.on(NEW_CHANNEL_MESSAGE, (message) => {

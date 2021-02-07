@@ -2,6 +2,7 @@ import socket from 'socket.io';
 
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 const NEW_DIRECT_MESSAGE = 'NEW_DIRECT_MESSAGE';
+const UPDATE_UNREAD_MESSAGE_COUNT = 'UPDATE_UNREAD_MESSAGE_COUNT';
 
 async function createSocketServer({ server }) {
   const io = socket(server, {
@@ -17,6 +18,7 @@ async function createSocketServer({ server }) {
 
     socket.on(NEW_CHANNEL_MESSAGE, (data) => {
       io.in(workspaceId).emit(NEW_CHANNEL_MESSAGE, data);
+      io.in(workspaceId).emit(UPDATE_UNREAD_MESSAGE_COUNT, data);
     });
 
     socket.on(NEW_DIRECT_MESSAGE, (data) => {
