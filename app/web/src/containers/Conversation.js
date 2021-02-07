@@ -1,77 +1,94 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import socketIOClient from 'socket.io-client';
+import { NEW_DIRECT_MESSAGE } from '../constants/types';
+import {
+  getDirectMessageData,
+  newDirectMessage,
+} from '../actions/directMessage';
+
+const SOCKET_SERVER = 'http://localhost:3000';
 
 const Conversation = () => {
-  // const socketRef = useRef();
+  const { workspaceId, recipientId } = useParams();
+  const socketRef = useRef();
   const messagesEndRef = useRef();
   const [message, setMessage] = useState('');
-  // const dispatch = useDispatch();
-  // const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
+  const directMessage = useSelector((state) => state.directMessage);
 
-  // useEffect(() => {
-  //   if (messagesEndRef.current) {
-  //     scrollToBottom();
-  //   }
-  // }, [channel.messages]);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      scrollToBottom();
+    }
+  }, [directMessage.messages]);
 
-  // useEffect(() => {
-  //   try {
-  //     dispatch(getChannelData({ channelId }));
+  useEffect(() => {
+    try {
+      dispatch(getDirectMessageData({ workspaceId, recipientId }));
 
-  //     socketRef.current = socketIOClient(SOCKET_SERVER, {
-  //       query: { workspaceId },
-  //     });
+      socketRef.current = socketIOClient(SOCKET_SERVER, {
+        query: { workspaceId },
+      });
 
-  //     socketRef.current.on(NEW_CHANNEL_MESSAGE, (message) => {
-  //       if (parseInt(channelId) === message.channelId) {
-  //         dispatch(newChannelMessage({ message }));
-  //       }
-  //     });
+      socketRef.current.on(NEW_DIRECT_MESSAGE, (message) => {
+        const workspace = parseInt(workspaceId) === message.workspaceId;
+        const isSender = message.userId === auth.userInfo.id;
+        const isRecipient = message.recipientId === auth.userInfo.id;
 
-  //     return () => {
-  //       socketRef.current.close();
-  //     };
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }, [dispatch, workspaceId, channelId]);
+        if (workspace && (isSender || isRecipient)) {
+          dispatch(newDirectMessage({ message }));
+        }
+      });
+
+      return () => {
+        socketRef.current.close();
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch, workspaceId, recipientId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
+  if (directMessage && !directMessage.user) {
+    return null;
+  }
+
   return (
     <>
-      <Header>Conversation</Header>
+      <Header>{directMessage.user.username}</Header>
       <Messages>
         <MessageList>
-          {/* {channel.messages.map((message) => (
-            <MessageListItem key={message.messageId}>
-              {message.text}
-            </MessageListItem>
-          ))} */}
+          {directMessage.messages.map((message) => (
+            <MessageListItem key={message.id}>{message.text}</MessageListItem>
+          ))}
           <div ref={messagesEndRef} />
         </MessageList>
       </Messages>
       <InputContainer>
         <Input
           type="text"
-          placeholder={`message #conversation`}
+          placeholder={`message #${directMessage.user.username}`}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          // onKeyDown={(e) => {
-          //   if (e.key.toLowerCase() === 'enter') {
-          //     socketRef.current.emit(NEW_CHANNEL_MESSAGE, {
-          //       workspaceId,
-          //       channelId: parseInt(channelId),
-          //       senderId: socketRef.current.id,
-          //       userId: auth.userInfo.id,
-          //       content: message,
-          //     });
-          //     setMessage('');
-          //   }
-          // }}
+          onKeyDown={(e) => {
+            if (e.key.toLowerCase() === 'enter') {
+              socketRef.current.emit(NEW_DIRECT_MESSAGE, {
+                workspaceId: parseInt(workspaceId),
+                recipientId: parseInt(recipientId),
+                senderId: socketRef.current.id,
+                userId: auth.userInfo.id,
+                content: message,
+              });
+              setMessage('');
+            }
+          }}
         />
       </InputContainer>
     </>

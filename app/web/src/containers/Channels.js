@@ -52,7 +52,7 @@ const Channels = ({ user, channels }) => {
               <FontAwesomeIcon icon={faPlusCircle} />
             </Add>
           </SideBarHeader>
-          <StyledLink to={`${url}/conversation/${user.id}`}>
+          <StyledLink to={`${url}/direct-messages/${user.id}`}>
             <SideBarListItem>
               <Bubble /> {user.username} <small>(you)</small>
             </SideBarListItem>

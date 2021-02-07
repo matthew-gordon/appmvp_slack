@@ -27,6 +27,13 @@ exports.seed = async (knex) => {
     },
     {
       id: 4,
+      senderId: 1,
+      recipientId: 1,
+      workspaceId: 2,
+      text: 'note to self, come back for this convo.',
+    },
+    {
+      id: 5,
       senderId: 2,
       recipientId: 1,
       workspaceId: 1,

@@ -8,6 +8,7 @@ exports.up = function (knex) {
       .references('workspaces.id')
       .onDelete('CASCADE');
     table.boolean('public').defaultTo(true);
+    table.boolean('default').defaultTo(false);
     table.unique(['workspaceId', 'name']);
     table.timestamps(true, true);
   });

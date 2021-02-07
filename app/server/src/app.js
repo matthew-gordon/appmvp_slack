@@ -7,6 +7,7 @@ import { createSocketServer } from './socketServer';
 import authRoutes from './routes/auth';
 import workspacesRoutes from './routes/workspaces';
 import channelsRoutes from './routes/channels';
+import directMessageRoutes from './routes/directMessage';
 import user from './middleware/user';
 
 config();
@@ -21,6 +22,7 @@ app.use(user);
 app.use(authRoutes);
 app.use(workspacesRoutes);
 app.use(channelsRoutes);
+app.use(directMessageRoutes);
 
 let server;
 

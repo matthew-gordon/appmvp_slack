@@ -10,7 +10,10 @@ const User = ({ user }) => {
   const handleChannelClick = () => {};
 
   return (
-    <StyledLink key={`user-${user.id}`} to={`${url}/conversation/${user.id}`}>
+    <StyledLink
+      key={`user-${user.id}`}
+      to={`${url}/direct-messages/${user.id}`}
+    >
       <SideBarListItem onClick={handleChannelClick}>
         <Bubble /> {user.username}
       </SideBarListItem>

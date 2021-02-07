@@ -1,6 +1,7 @@
 import socket from 'socket.io';
 
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
+const NEW_DIRECT_MESSAGE = 'NEW_DIRECT_MESSAGE';
 
 async function createSocketServer({ server }) {
   const io = socket(server, {
@@ -10,16 +11,20 @@ async function createSocketServer({ server }) {
   });
 
   io.on('connection', (socket) => {
-    const { workspaceId, channelId } = socket.handshake.query;
+    const { workspaceId } = socket.handshake.query;
 
-    socket.join(channelId);
+    socket.join(workspaceId);
 
     socket.on(NEW_CHANNEL_MESSAGE, (data) => {
-      io.in(channelId).emit(NEW_CHANNEL_MESSAGE, data);
+      io.in(workspaceId).emit(NEW_CHANNEL_MESSAGE, data);
+    });
+
+    socket.on(NEW_DIRECT_MESSAGE, (data) => {
+      io.in(workspaceId).emit(NEW_DIRECT_MESSAGE, data);
     });
 
     socket.on('disconnect', () => {
-      socket.leave(channelId);
+      socket.leave(workspaceId);
     });
   });
 }
